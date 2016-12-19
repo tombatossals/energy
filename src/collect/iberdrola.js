@@ -2,6 +2,7 @@ import fs from 'fs'
 import urljoin from 'url-join'
 import moment from 'moment'
 import phantom from 'phantom'
+import XLSX from 'xlsx'
 
 const config = require('../../config')
 const endDate = moment().add(1, 'd')
@@ -79,29 +80,62 @@ const waitFor = async (data) => {
   while (initDate.isBefore(endDate)) {
     console.log(`Downloading ${initDate.format("DD-MM-YYYY")} into "data" folder...`)
     const url = getXLSXUrl(initDate)
-    const result = await page.evaluate((url) => {
-      var Base64 = {
-        encode: function(s) {
-          return btoa(unescape(encodeURIComponent(s)));
-        },
-        decode: function(s) {
-          return decodeURIComponent(escape(atob(s)));
+    const b64string = await page.evaluate((url) => {
+      var BASE64_ENCODE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+      function encodeBase64(str) {
+        /*eslint max-statements:0 */
+        var out = "", i = 0, len = str.length, c1, c2, c3;
+        while (i < len) {
+            c1 = str.charCodeAt(i++) & 0xff;
+            if (i === len) {
+                out += BASE64_ENCODE_CHARS.charAt(c1 >> 2);
+                out += BASE64_ENCODE_CHARS.charAt((c1 & 0x3) << 4);
+                out += "==";
+                break;
+            }
+            c2 = str.charCodeAt(i++);
+            if (i === len) {
+                out += BASE64_ENCODE_CHARS.charAt(c1 >> 2);
+                out += BASE64_ENCODE_CHARS.charAt((c1 & 0x3) << 4 | (c2 & 0xF0) >> 4);
+                out += BASE64_ENCODE_CHARS.charAt((c2 & 0xF) << 2);
+                out += "=";
+                break;
+            }
+            c3 = str.charCodeAt(i++);
+            out += BASE64_ENCODE_CHARS.charAt(c1 >> 2);
+            out += BASE64_ENCODE_CHARS.charAt((c1 & 0x3) << 4 | (c2 & 0xF0) >> 4);
+            out += BASE64_ENCODE_CHARS.charAt((c2 & 0xF) << 2 | (c3 & 0xC0) >> 6);
+            out += BASE64_ENCODE_CHARS.charAt(c3 & 0x3F);
         }
+        return out;
       }
 
-      var out
-      $.ajax({
-          async : false,
-          url : url,
-          error : function(xhr, error) {
-            out = Base64.encode(xhr.responseText);
-          }
+      var xhr = new XMLHttpRequest()
+      xhr.open('GET', url, false)
+      xhr.overrideMimeType('text/plain; charset=x-user-defined')
+      xhr.send(null)
 
-      });
-      return out
+      return encodeBase64(xhr.responseText)
+
     }, url);
 
-    fs.writeFileSync('data/' + initDate.format("DD-MM-YYYY") + '.xlsx', result);
+    if (!b64string) continue
+
+    const data = XLSX.read(Buffer.from(b64string, 'base64')).Sheets.Consumo
+
+    const result = {
+        date: moment(initDate, "DD-MM-YYYY").toJSON(),
+        values: []
+    }
+
+    Object.keys(data).map(function(key, index) {
+        if (key[0] === 'B' && data[key].v && data[key].v !== 'Mi consumo') {
+            result.values.push(data[key].v)
+        }
+    })
+
+    fs.writeFileSync('data/' + initDate.format("DD-MM-YYYY") + '.xlsx', JSON.stringify(result));
     initDate.add(1, 'd')
   }
 
