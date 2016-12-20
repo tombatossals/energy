@@ -5,17 +5,20 @@ import phantom from 'phantom'
 import XLSX from 'xlsx'
 
 const config = require('../../config')
-const endDate = moment().add(1, 'd')
+let endDate = moment().add(1, 'd')
 let initDate = moment()
 
 if (process.argv.length > 2) {
   initDate = moment(process.argv[2], 'DD-MM-YYYY')
+  if (process.argv.length > 3) {
+    endDate = moment(process.argv[2], 'DD-MM-YYYY')
+  }
 }
 
 const baseUrl = 'https://www.iberdroladistribucionelectrica.com/consumidores/'
 
 const getXLSXUrl = (dt) =>
-    urljoin('https://www.iberdroladistribucionelectrica.com/consumidores/',
+    urljoin(baseUrl,
         '/rest/consumoNew/exportarAXLSNew/fecha/',
         dt.format('DD-MM-YYYY') + '00:00:00',
         '/fecha2/0/frecuencia/horas/comparacion/false')
