@@ -1,13 +1,36 @@
-import firebase from 'firebase'
+import firebase from 'firebase-admin'
+import moment from 'moment'
+import fs from 'fs'
+import path from 'path'
 import { getConfig } from '../common'
 
 const config = getConfig().import.firebase
 
-console.log(config)
+firebase.initializeApp({
+  credential: firebase.credential.cert(config.credentials),
+  databaseURL: config.databaseURL
+})
 
+const db = firebase.database()
 
-firebase.initializeApp(config);
+const addJSON = (db, json) =>
+  db.ref('measures/' + moment(json.date).format("YYYYMMDD")).set({ values: json.values})
 
-const db = firebase.database();
+fs.readdir('data', (err, list) => {
+  if (err) {
+    console.log('You must collect some data from a energy provider with the "collect" script')
+    process.exit(-1)
+  }
 
-console.log(db)
+  let promises = list.map((file) =>
+    new Promise((resolve) =>
+      fs.readFile(path.join('data', file), (err, data) => {
+        resolve(addJSON(db, JSON.parse(data)))
+      })
+    )
+  )
+
+  Promise.all(promises).then(() => {
+    process.exit()
+  })
+})
