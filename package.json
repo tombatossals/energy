@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "standard": "standard 'src/**/*.js'",
-    "collect": "babel-node --harmony-async-await src/collect/iberdrola.js"
+    "collect": "babel-node --harmony-async-await src/collect/iberdrola.js",
+    "import": "babel-node src/import/firebase"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,8 @@
   },
   "homepage": "https://github.com/tombatossals/energy#readme",
   "dependencies": {
+    "babel-cli": "^6.18.0",
+    "firebase": "^3.6.4",
     "moment": "^2.17.1",
     "phantom": "^3.2.1",
     "url-join": "^1.1.0",

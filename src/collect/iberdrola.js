@@ -3,10 +3,21 @@ import urljoin from 'url-join'
 import moment from 'moment'
 import phantom from 'phantom'
 import XLSX from 'xlsx'
+import { getConfig } from '../common'
 
-const config = require('../../config')
-let endDate = moment().add(1, 'd')
-let initDate = moment()
+const mkdirSync = (path) => {
+  try {
+    fs.mkdirSync(path);
+  } catch(e) {
+    if ( e.code != 'EEXIST' ) throw e;
+  }
+}
+
+const config = getConfig().collect.iberdrola
+
+let endDate = moment().subtract(1, 'd')
+let initDate = moment().subtract(2, 'd')
+
 
 if (process.argv.length > 2) {
   initDate = moment(process.argv[2], 'DD-MM-YYYY')
@@ -14,6 +25,8 @@ if (process.argv.length > 2) {
     endDate = moment(process.argv[2], 'DD-MM-YYYY')
   }
 }
+
+mkdirSync('data')
 
 const baseUrl = 'https://www.iberdroladistribucionelectrica.com/consumidores/'
 
@@ -54,8 +67,8 @@ const waitFor = async (data) => {
   await waitFor({ page, check: () => $('#form_login').is(':visible') })
 
   // Fill and submit login form
-  const username = config.collect.iberdrola.username
-  const password = config.collect.iberdrola.password
+  const username = config.username
+  const password = config.password
   await page.evaluate((username, password) => {
       $('#inputUser').val(username)
       $('#inputPassword').val(password)
@@ -74,7 +87,7 @@ const waitFor = async (data) => {
   })
 
   // Click contract
-  const contract = config.collect.iberdrola.contract
+  const contract = config.contract
   await page.evaluate((contract) => $('td:contains("' + contract + '")').click(), contract)
 
   // Wait for contract loaded
@@ -138,7 +151,7 @@ const waitFor = async (data) => {
         }
     })
 
-    fs.writeFileSync('data/' + initDate.format("DD-MM-YYYY") + '.xlsx', JSON.stringify(result));
+    fs.writeFileSync('data/' + initDate.format("DD-MM-YYYY") + '.json', JSON.stringify(result));
     initDate.add(1, 'd')
   }
 
