@@ -4,10 +4,13 @@
   "description": "Take control of your energy consumption",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "standard": "standard 'src/**/*.js'",
     "collect": "babel-node --harmony-async-await src/collect/iberdrola.js",
-    "import": "babel-node src/import/firebase"
+    "import": "babel-node src/import/firebase",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "repository": {
     "type": "git",
@@ -27,16 +30,17 @@
   },
   "devDependencies": {
     "babel-preset-latest": "^6.16.0",
+    "react-scripts": "0.8.4",
     "standard": "^8.3.0"
   },
-  "homepage": "https://github.com/tombatossals/energy#readme",
   "dependencies": {
+    "@blueprintjs/core": "^1.4.0",
     "babel-cli": "^6.18.0",
     "firebase-admin": "^4.0.4",
-    "material-ui": "^0.16.5",
     "moment": "^2.17.1",
     "phantom": "^3.2.1",
     "react": "^15.4.1",
+    "react-dom": "^15.4.1",
     "react-router": "4.0.0-alpha.6",
     "url-join": "^1.1.0",
     "xlsx": "^0.8.0"
