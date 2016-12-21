@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './deploy/App';
+import App from './deploy/components';
 import '../node_modules/@blueprintjs/core/dist/blueprint.css'
 
 ReactDOM.render(

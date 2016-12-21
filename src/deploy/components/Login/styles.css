@@ -1,0 +1,16 @@
+.Login {
+  display: flex;
+  align-items: center;  
+  justify-content: center;
+  flex: 2 2 100%;
+}
+
+.Login-box {
+  width: 40vw;
+  padding: 2rem;
+  background: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 5px 5px 20px #acb8c4;
+}
