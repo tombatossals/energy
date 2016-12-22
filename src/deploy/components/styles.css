@@ -12,11 +12,15 @@ body {
 div#root {
     display: flex;
     flex: 1;
-    min-width: 400px;    
+    min-width: 400px;
+}
+
+div#firebaseui-auth{
+  display: none;
 }
 
 div.container {
     display: flex;
     flex: 1;
-    flex-wrap: wrap;
+    flex-direction: column;
 }
