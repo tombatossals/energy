@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Match, BrowserRouter, Miss, Redirect } from 'react-router'
 import { connect } from 'react-redux'
 import { startAuthListener } from '../actions'
-import Layout from '../components/Layout'
+import Layout from '../containers/Layout'
 import Home from '../components/Home'
 import Login from '../containers/Login'
 import Dashboard from '../components/Dashboard'
@@ -42,9 +42,9 @@ class Routes extends Component {
     return (
       <BrowserRouter>
         {({ router }) => (
-          <div className="container">
-            <MatchAnonymous pattern='/' exactly component={Home} />
-            <MatchAnonymous pattern='/logout' exactly component={Logout} />
+          <div className="router">         
+            <MatchAnonymous pattern='/logout' exactly component={Logout} />          
+            <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/' component={Dashboard} {...this.props} />            
             <MatchWhenUnauthed authed={this.props.auth.authenticated} pattern='/login' component={Login} {...this.props} />
             <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/dashboard' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />

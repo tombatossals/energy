@@ -38,7 +38,7 @@ export const authenticate = () =>
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
-    firebase.auth().signInWithPopup(provider).then(function(result) {
+    firebase.auth().signInWithRedirect(provider).then(function(result) {
       const user = result.user
       dispatch(loginAction({
         status: AsyncStatus.SUCCESS,

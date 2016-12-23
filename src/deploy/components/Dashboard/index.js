@@ -1,4 +1,9 @@
 import React from 'react';
+import { VictoryPie } from 'victory';
 
-export default () =>
-    <div>Dashboard</div>
+export default () => (
+    <div>
+        <h1>Dashboard</h1>
+        <VictoryPie />
+    </div>
+)

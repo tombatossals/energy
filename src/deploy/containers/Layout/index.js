@@ -1,6 +1,9 @@
 import React from 'react'
 import Helmet from 'react-helmet'
-import NavBar from '../NavBar'
+import { connect } from 'react-redux'
+import NavBar from '../../components/NavBar'
+import 'normalize.css/normalize.css'
+import 'open-color/open-color.css'
 import './styles.css'
 
 class Layout extends React.Component {
@@ -21,4 +24,8 @@ class Layout extends React.Component {
   }
 }
 
-export default Layout
+const mapStateToProps = ({ auth }) => ({
+  auth
+})
+
+export default connect(mapStateToProps)(Layout)
