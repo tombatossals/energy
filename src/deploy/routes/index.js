@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Match, BrowserRouter, Miss, Redirect } from 'react-router'
+import Layout from '../containers/Layout'
 import Home from '../components/Home'
 import Login from '../components/Login'
 import Dashboard from '../components/Dashboard'
@@ -19,7 +20,7 @@ const MatchWhenUnauthed = ({ component: Component, authed, ...rest }) => (
   <Match
     {...rest}
     render={(props) => authed === false
-      ? <Component {...props} {...rest} />
+      ? <Layout><Component {...props} {...rest} /></Layout>
       : <Redirect to='/dashboard' />}
   />
 )
