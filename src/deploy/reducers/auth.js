@@ -1,47 +1,27 @@
 import { handleActions } from 'redux-actions'
 import { AsyncStatus, AuthActions } from '../lib/constants'
-import jwtDecode from 'jwt-decode'
-
-const checkTokenExpiry = () => {
-  const jwt = localStorage.getItem('id_token')
-  if (jwt) {
-    const jwtExp = jwtDecode(jwt).exp;
-    const expiryDate = new Date(0);
-    expiryDate.setUTCSeconds(jwtExp);
-
-    return new Date() < expiryDate
-  }
-  return false;  
-}
 
 const initialState = {
-  authenticated: checkTokenExpiry(),
+  authenticated: false,
   status: AsyncStatus.IDLE,
   user: {},
   error: undefined
 }
 
-const userLogin = (state, action) => {
+const checkAuthentication = (state, action) => {
   switch (action.payload.status) {
     case AsyncStatus.FAILED:
-      return {
-        status: AsyncStatus.FAILED,
-        message: action.payload.message
-      }
+      return action.payload
     case AsyncStatus.REQUEST:
-      return {
-        status: AsyncStatus.REQUEST
-      }
+      return { ...state, status: action.payload.status }
     case AsyncStatus.SUCCESS:
-      return {
-        status: AsyncStatus.SUCCESS,
-        data: action.payload.data
-      }
+      return action.payload
     default:
       return state
   }
 }
 
 export default handleActions({
-  [AuthActions.AUTH_USER_LOGIN]: userLogin
+  [AuthActions.AUTH_USER_AUTHENTICATE]: checkAuthentication,
+  [AuthActions.AUTH_CHECK_TOKEN]: checkAuthentication
 }, initialState)

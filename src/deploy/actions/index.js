@@ -1,5 +1,5 @@
 export {
   authenticate,
-  checkAuthToken,
+  startAuthListener,
   logout
 } from './auth'

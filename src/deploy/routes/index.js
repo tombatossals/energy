@@ -1,18 +1,26 @@
 import React, { Component } from 'react'
 import { Match, BrowserRouter, Miss, Redirect } from 'react-router'
-import Layout from '../containers/Layout'
+import { connect } from 'react-redux'
+import { startAuthListener } from '../actions'
+import Layout from '../components/Layout'
 import Home from '../components/Home'
-import Login from '../components/Login'
+import Login from '../containers/Login'
 import Dashboard from '../components/Dashboard'
-import NavBar from '../components/NavBar'
-import Logout from '../components/Logout'
+import Logout from '../containers/Logout'
 
 const MatchWhenAuthed = ({ component: Component, authed, ...rest }) => (
   <Match
     {...rest}
     render={(props) => authed === true
-      ? <Component {...props} />
+      ? <Layout><Component {...props} {...rest} /></Layout>
       : <Redirect to={{ pathname: '/login', state: {from: props.location}} } />}
+  />
+)
+
+const MatchAnonymous = ({ component: Component, ...rest }) => (
+  <Match
+    {...rest}
+    render={(props) => <Layout><Component {...props} {...rest} /></Layout>}
   />
 )
 
@@ -21,47 +29,24 @@ const MatchWhenUnauthed = ({ component: Component, authed, ...rest }) => (
     {...rest}
     render={(props) => authed === false
       ? <Layout><Component {...props} {...rest} /></Layout>
-      : <Redirect to='/dashboard' />}
+      : <Redirect to='/' />}
   />
 )
 
-class App extends Component {
-
-  state = {
-    authed: false,
-    loading: true,
-  }
-
+class Routes extends Component {
   componentDidMount () {
-    this.removeListener = this.props.firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({
-          authed: true,
-          loading: false,
-        })
-      } else {
-        this.setState({
-          loading: false,
-          authed: false
-        })
-      }
-    })
-  }
-
-  componentWillUnmount () {
-    this.removeListener()
+    this.props.startAuthListener()
   }
 
   render() {
-    return this.state.loading === true ? <h1>Loading</h1> : (
+    return (
       <BrowserRouter>
         {({ router }) => (
           <div className="container">
-            <NavBar {...this.props } />
-            <Match pattern='/' exactly component={Home} />
-            <Match pattern='/logout' exactly render={(props) => <Logout firebase={this.props.firebase} />} />
-            <MatchWhenUnauthed authed={this.state.authed} pattern='/login' component={Login} {...this.props} />
-            <MatchWhenAuthed authed={this.state.authed} pattern='/dashboard' component={Dashboard} />
+            <MatchAnonymous pattern='/' exactly component={Home} />
+            <MatchAnonymous pattern='/logout' exactly component={Logout} />
+            <MatchWhenUnauthed authed={this.props.auth.authenticated} pattern='/login' component={Login} {...this.props} />
+            <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/dashboard' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />
           </div>
         )}
@@ -70,4 +55,8 @@ class App extends Component {
   }
 }
 
-export default App
+const mapStateToProps = ({ auth }) => ({
+  auth
+})
+
+export default connect(mapStateToProps, { startAuthListener })(Routes)
