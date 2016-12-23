@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import { Match, BrowserRouter, Miss, Redirect } from 'react-router'
-import Home from './Home'
-import Login from './Login'
-import Dashboard from './Dashboard'
-import NavBar from './NavBar'
-import Logout from './Logout'
-import './styles.css'
+import Home from '../components/Home'
+import Login from '../components/Login'
+import Dashboard from '../components/Dashboard'
+import NavBar from '../components/NavBar'
+import Logout from '../components/Logout'
 
 const MatchWhenAuthed = ({ component: Component, authed, ...rest }) => (
   <Match
@@ -34,7 +33,6 @@ class App extends Component {
 
   componentDidMount () {
     this.removeListener = this.props.firebase.auth().onAuthStateChanged((user) => {
-      console.log('hola', user)
       if (user) {
         this.setState({
           authed: true,
@@ -56,12 +54,12 @@ class App extends Component {
   render() {
     return this.state.loading === true ? <h1>Loading</h1> : (
       <BrowserRouter>
-        {({router}) => (
+        {({ router }) => (
           <div className="container">
             <NavBar {...this.props } />
             <Match pattern='/' exactly component={Home} />
+            <Match pattern='/logout' exactly render={(props) => <Logout firebase={this.props.firebase} />} />
             <MatchWhenUnauthed authed={this.state.authed} pattern='/login' component={Login} {...this.props} />
-            <MatchWhenUnauthed authed={this.state.authed} pattern='/logout' component={Logout} />
             <MatchWhenAuthed authed={this.state.authed} pattern='/dashboard' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />
           </div>
