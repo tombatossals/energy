@@ -3,7 +3,7 @@ import urljoin from 'url-join'
 import moment from 'moment'
 import phantom from 'phantom'
 import XLSX from 'xlsx'
-import { getConfig } from '../common'
+import { getConfig } from '../config'
 
 const mkdirSync = (path) => {
   try {
@@ -14,7 +14,6 @@ const mkdirSync = (path) => {
 }
 
 const config = getConfig().collect.iberdrola
-
 let endDate = moment().subtract(1, 'd')
 let initDate = moment().subtract(2, 'd')
 

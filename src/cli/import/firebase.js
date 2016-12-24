@@ -2,7 +2,7 @@ import firebase from 'firebase-admin'
 import moment from 'moment'
 import fs from 'fs'
 import path from 'path'
-import { getConfig } from '../common'
+import { getConfig } from '../config'
 
 const config = getConfig().import.firebase
 

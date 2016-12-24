@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "standard": "standard 'src/**/*.js'",
-    "collect": "babel-node --harmony-async-await src/collect/iberdrola.js",
-    "import": "babel-node src/import/firebase",
+    "collect": "babel-node --harmony-async-await src/cli/collect/iberdrola.js",
+    "import": "babel-node src/cli/import/firebase",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
