@@ -6,8 +6,8 @@ import configureStore from './lib/store'
 
 export const renderApp = () =>
     ReactDOM.render(
-        <Provider store={configureStore()}> 
-            <Routes />
-        </Provider>,
+      <Provider store={configureStore()}>
+        <Routes />
+      </Provider>,
         document.getElementById('root')
     )

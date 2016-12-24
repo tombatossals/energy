@@ -14,7 +14,7 @@ firebase.initializeApp({
 const db = firebase.database()
 
 const addJSON = (db, json) =>
-  db.ref('measures/' + moment(json.date).format("YYYYMMDD")).set({ values: json.values})
+  db.ref('measures/' + moment(json.date).format('YYYYMMDD')).set({ values: json.values })
 
 fs.readdir('data', (err, list) => {
   if (err) {
@@ -23,8 +23,9 @@ fs.readdir('data', (err, list) => {
   }
 
   let promises = list.map((file) =>
-    new Promise((resolve) =>
+    new Promise((resolve, reject) =>
       fs.readFile(path.join('data', file), (err, data) => {
+        if (err) return reject(err)
         resolve(addJSON(db, JSON.parse(data)))
       })
     )

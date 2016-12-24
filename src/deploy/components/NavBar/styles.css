@@ -1,6 +1,9 @@
 .NavBar {
   margin-bottom: 2rem;
+  padding-bottom: .8rem;
   display: flex;
+  border-bottom: 1px solid;
+  border-bottom-color: var(--oc-gray-4);
 }
 
 .NavBar h1 {
@@ -10,13 +13,21 @@
   text-shadow: 2px 4px 3px rgba(255,255,255,0.3);
 }
 
-.NavBar .Logout {
+.NavBar h1 img {
+  vertical-align: top;
+}
+
+.NavBar .Menu {
   margin-left: auto;
+  margin-top: 3.5rem;
+}
+
+.NavBar .Menu .Logout {
+  color: var(--oc-gray-5);
   text-decoration: none;
-  color: var(--oc-grey-2);
-  margin-top: 2rem;
 }
 
 .NavBar .Logout:hover {
+  color: var(--oc-gray-6);
   text-decoration: underline;
 }

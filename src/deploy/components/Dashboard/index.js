@@ -1,9 +1,10 @@
-import React from 'react';
-import { VictoryPie } from 'victory';
+import React from 'react'
+import Chart from '../Chart'
+import './styles.css'
 
 export default () => (
-    <div>
-        <h1>Dashboard</h1>
-        <VictoryPie />
-    </div>
+  <div className='Dashboard'>
+    <h1>Dashboard</h1>
+    <div className='Chart'><Chart /></div>
+  </div>
 )

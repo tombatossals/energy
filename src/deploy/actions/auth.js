@@ -5,10 +5,10 @@ import { getFirebase } from '../lib/firebase'
 const firebase = getFirebase()
 
 export const startAuthListener = () =>
-  dispatch => 
+  dispatch =>
     firebase.auth().onAuthStateChanged((user) => {
       const checkTokenAction = createAction(AuthActions.AUTH_CHECK_TOKEN)
-      
+
       if (user) {
         return dispatch(checkTokenAction({
           status: AsyncStatus.SUCCESS,
@@ -24,37 +24,36 @@ export const startAuthListener = () =>
         user: undefined,
         error: undefined
       }))
-      
     })
 
 export const authenticate = () =>
   dispatch => {
-    const loginAction = createAction(AuthActions.AUTH_USER_AUTHENTICATE)    
+    const loginAction = createAction(AuthActions.AUTH_USER_AUTHENTICATE)
     dispatch(loginAction({
       status: AsyncStatus.REQUEST,
       error: undefined
     }))
-    
-    const provider = new firebase.auth.GoogleAuthProvider();
-    provider.addScope('profile');
-    provider.addScope('email');
-    firebase.auth().signInWithRedirect(provider).then(function(result) {
+
+    const provider = new firebase.auth.GoogleAuthProvider()
+    provider.addScope('profile')
+    provider.addScope('email')
+    firebase.auth().signInWithRedirect(provider).then(result => {
       const user = result.user
       dispatch(loginAction({
         status: AsyncStatus.SUCCESS,
         user,
         error: undefined
       }))
-    });
+    })
   }
 
 export const logout = () =>
   dispatch => {
-    const logoutAction = createAction(AuthActions.AUTH_USER_LOGOUT)    
+    const logoutAction = createAction(AuthActions.AUTH_USER_LOGOUT)
     dispatch(logoutAction({
       status: AsyncStatus.REQUEST,
       error: undefined
     }))
-    
+
     firebase.auth().signOut()
   }

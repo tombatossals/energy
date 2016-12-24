@@ -4,10 +4,6 @@ import { Link } from 'react-router'
 import { logout } from '../../actions'
 
 class Logout extends React.Component {
-  static propTypes = {
-    logout: React.PropTypes.func.isRequired
-  }
-
   componentDidMount () {
     this.props.logout()
   }
@@ -20,6 +16,10 @@ class Logout extends React.Component {
       </div>
     )
   }
+}
+
+Logout.propTypes = {
+  logout: React.PropTypes.func.isRequired
 }
 
 export default connect(null, { logout })(Logout)

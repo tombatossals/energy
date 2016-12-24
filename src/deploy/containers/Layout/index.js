@@ -9,7 +9,7 @@ import './styles.css'
 class Layout extends React.Component {
   render () {
     return (
-      <div className="container">
+      <div className='container'>
         <Helmet
           htmlAttributes={{lang: 'en'}}
           title='Energy'
@@ -17,7 +17,7 @@ class Layout extends React.Component {
               { name: 'description', content: 'Energy consumption power.' }
           ]}
         />
-        <NavBar {...this.props } />
+        <NavBar {...this.props} />
         {this.props.children }
       </div>
     )

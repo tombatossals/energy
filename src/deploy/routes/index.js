@@ -3,7 +3,6 @@ import { Match, BrowserRouter, Miss, Redirect } from 'react-router'
 import { connect } from 'react-redux'
 import { startAuthListener } from '../actions'
 import Layout from '../containers/Layout'
-import Home from '../components/Home'
 import Login from '../containers/Login'
 import Dashboard from '../components/Dashboard'
 import Logout from '../containers/Logout'
@@ -13,7 +12,7 @@ const MatchWhenAuthed = ({ component: Component, authed, ...rest }) => (
     {...rest}
     render={(props) => authed === true
       ? <Layout><Component {...props} {...rest} /></Layout>
-      : <Redirect to={{ pathname: '/login', state: {from: props.location}} } />}
+      : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />}
   />
 )
 
@@ -38,13 +37,13 @@ class Routes extends Component {
     this.props.startAuthListener()
   }
 
-  render() {
+  render () {
     return (
       <BrowserRouter>
         {({ router }) => (
-          <div className="router">         
-            <MatchAnonymous pattern='/logout' exactly component={Logout} />          
-            <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/' component={Dashboard} {...this.props} />            
+          <div className='router'>
+            <MatchAnonymous pattern='/logout' exactly component={Logout} />
+            <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/' component={Dashboard} {...this.props} />
             <MatchWhenUnauthed authed={this.props.auth.authenticated} pattern='/login' component={Login} {...this.props} />
             <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/dashboard' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />
@@ -53,6 +52,13 @@ class Routes extends Component {
       </BrowserRouter>
     )
   }
+}
+
+Routes.propTypes = {
+  startAuthListener: React.PropTypes.func.isRequired,
+  auth: React.PropTypes.shape({
+    authenticated: React.PropTypes.bool.isRequired
+  }).isRequired
 }
 
 const mapStateToProps = ({ auth }) => ({

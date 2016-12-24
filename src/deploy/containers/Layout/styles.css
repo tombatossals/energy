@@ -4,8 +4,10 @@ html {
 }
 
 body {
-  font-family: 'Sanchez', serif;        
+  font-family: 'Sanchez', serif;
   min-height: 80vh;
+  max-width: 960px;
+  margin: auto;
   background: var(--oc-gray-2);
   padding: 2rem;
   display: flex;
