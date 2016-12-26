@@ -3,28 +3,28 @@
   align-items: center;
   justify-content: center;
   flex: 2 2 100%;
+  position: relative;
 }
 
-.Login-box {
-  padding: 1rem;
-  background: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  box-shadow: 5px 5px 20px #acb8c4;
-  cursor: pointer;
-  transition: background-color 0.05s;
-  transition: box-shadow 0.05s;
+.Login .Spinner {
+  position: fixed;
+  z-index: 999;
+  width: 200px;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }
 
-.Login-box img {
-  width: 64px;
+.GoogleIcon {
+  width: 32px;
   vertical-align: middle;
   margin-right: 1rem;
 }
 
-.Login-box:hover {
-  background-color: var(--oc-gray-2);
-  box-shadow: 0px 0px 0px;
-  border: 1px solid var(--oc-gray-4);
+.Login.disabled {
+  pointer-events:none;
+  opacity: .5;
 }

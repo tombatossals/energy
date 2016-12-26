@@ -1,0 +1,9 @@
+.Dashboard .Bar {
+  display: flex;
+}
+
+.Dashboard .Bar h1 {
+  margin-left: 4rem;
+  color: var(--oc-gray-6);
+  flex: 1;
+}

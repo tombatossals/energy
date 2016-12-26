@@ -17,6 +17,10 @@
   vertical-align: top;
 }
 
+.NavBar h1 a:hover {
+  text-decoration: none;
+}
+
 .NavBar .Menu {
   margin-left: auto;
   margin-top: 3.5rem;
@@ -24,7 +28,6 @@
 
 .NavBar .Menu .Logout {
   color: var(--oc-gray-5);
-  text-decoration: none;
 }
 
 .NavBar .Logout:hover {

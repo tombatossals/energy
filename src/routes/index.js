@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { startAuthListener } from '../actions'
 import Layout from '../containers/Layout'
 import Login from '../containers/Login'
-import Dashboard from '../components/Dashboard'
+import Dashboard from '../containers/Dashboard'
 import Logout from '../containers/Logout'
 
 const MatchWhenAuthed = ({ component: Component, authed, ...rest }) => (
@@ -43,7 +43,7 @@ class Routes extends Component {
         {({ router }) => (
           <div className='router'>
             <MatchAnonymous pattern='/logout' exactly component={Logout} />
-            <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/' component={Dashboard} {...this.props} />
+            <MatchWhenAuthed exactly authed={this.props.auth.authenticated} pattern='/' component={Dashboard} {...this.props} />
             <MatchWhenUnauthed authed={this.props.auth.authenticated} pattern='/login' component={Login} {...this.props} />
             <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/dashboard' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />

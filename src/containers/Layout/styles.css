@@ -5,7 +5,7 @@ html {
 
 body {
   font-family: 'Sanchez', serif;
-  min-height: 80vh;
+  min-height: 70vh;
   max-width: 960px;
   margin: auto;
   background: var(--oc-gray-2);
@@ -29,3 +29,14 @@ div.container {
     flex: 1;
     flex-direction: column;
 }
+
+a {
+  text-decoration: none;
+  color: var(--oc-gray-6);
+}
+
+a:hover {
+  color: var(--oc-gray-8);
+  text-decoration: underline;
+}
+

@@ -1,0 +1,51 @@
+.Button
+{
+	transition: all 0.1s;
+	-webkit-transition: all 0.1s;
+	position: relative;
+	padding: 10px 40px;
+  margin: 1rem 0 0 0;
+	border-radius: 10px;
+  height: 1.5rem;
+  text-align: center;
+	font-size: 1.4rem;
+	color: #FFF;
+	text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.Button.Blue
+{
+  background-color: var(--oc-indigo-5);
+	border-bottom: 5px solid #2980B9;
+	text-shadow: 0px -2px #2980B9;
+}
+
+.Button.Red
+{
+	background-color: #E74C3C;
+	border-bottom: 5px solid #BD3E31;
+	text-shadow: 0px -2px #BD3E31;
+}
+
+.Button.Green
+{
+	background-color: #82BF56;
+	border-bottom: 5px solid #669644;
+	text-shadow: 0px -2px #669644;
+}
+
+.Button.Yellow
+{
+	background-color: #F2CF66;
+	border-bottom: 5px solid #D1B358;
+	text-shadow: 0px -2px #D1B358;
+}
+
+.Button:active
+{
+	transform: translate(0px,5px);
+  -webkit-transform: translate(0px,5px);
+	border-bottom: 1px solid transparent;
+}

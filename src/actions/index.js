@@ -3,3 +3,7 @@ export {
   startAuthListener,
   logout
 } from './auth'
+
+export {
+  getMeasuresByDay
+} from './measure'

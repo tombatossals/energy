@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { logout } from '../../actions'
+import './styles.css'
 
 class Logout extends React.Component {
   componentDidMount () {
@@ -10,9 +11,9 @@ class Logout extends React.Component {
 
   render () {
     return (
-      <div>
+      <div className='Logout'>
         <h1>Logged out</h1>
-        <Link to='/'>Go to main page</Link>
+        <Link className='Return' to='/'>Return to main page</Link>
       </div>
     )
   }
