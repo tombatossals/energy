@@ -2,9 +2,11 @@ import React from 'react'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import { getMeasuresByDay } from '../../actions'
+import { AsyncStatus } from '../../lib/constants'
 import Chart from '../../components/Chart'
 import Button from '../../components/Button'
 import DatePicker from '../../components/DatePicker'
+import InfiniteCalendar from 'react-infinite-calendar'
 import './styles.css'
 
 class Dashboard extends React.Component {
@@ -53,7 +55,17 @@ class Dashboard extends React.Component {
           </Button>
         </div>
         <h2>{ this.state.day.format("dddd, MMMM Do YYYY, h:mm:ss a") }</h2>
-        <div className='Chart'><Chart data={this.props.measure} /></div>
+        { this.props.measure.status === AsyncStatus.FAILED
+          ? <div>{ this.props.measure.error }</div>
+          : <div className='Chart'><Chart data={this.props.measure} /></div>
+        }
+        <InfiniteCalendar
+          height={400}
+          onSelect={this.props.onSelect}
+          maxDate={moment().subtract(2, 'day')}
+          max={moment().subtract(2, 'day')}
+        />
+
         { this.state.showDatePicker && <DatePicker onClose={this.hideDatePicker} onSelect={this.dateSelected} /> }
       </div>
     )

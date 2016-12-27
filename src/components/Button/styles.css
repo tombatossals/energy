@@ -1,7 +1,7 @@
 .Button
 {
 	transition: all 0.1s;
-	-webkit-transition: all 0.1s;
+  transition: background-color 0.5s ease;
 	position: relative;
 	padding: 10px 40px;
   margin: 1rem 0 0 0;
@@ -18,8 +18,8 @@
 .Button.Blue
 {
   background-color: var(--oc-indigo-5);
-	border-bottom: 5px solid #2980B9;
-	text-shadow: 0px -2px #2980B9;
+	border-bottom: 5px solid var(--oc-indigo-9);
+	text-shadow: 0px -2px var(--oc-indigo-9);
 }
 
 .Button.Red
@@ -31,9 +31,16 @@
 
 .Button.Green
 {
-	background-color: #82BF56;
-	border-bottom: 5px solid #669644;
-	text-shadow: 0px -2px #669644;
+	background-color: var(--oc-green-6);
+	border-bottom: 5px solid var(--oc-green-9);
+	text-shadow: 0px -2px var(--oc-green-9);
+}
+
+.Button.Green:hover
+{
+	background-color: var(--oc-green-5);
+	border-bottom: 5px solid var(--oc-green-8);
+	text-shadow: 0px -2px var(--oc-green-8);
 }
 
 .Button.Yellow

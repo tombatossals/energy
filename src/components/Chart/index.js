@@ -6,7 +6,7 @@ import Spinner from '../../components/Spinner'
 export default class Chart extends React.Component {
   render () {
     if (this.props.data.status !== AsyncStatus.SUCCESS) {
-      return <Spinner />
+      return <Spinner maxWidth='120px' />
     }
 
     return (
