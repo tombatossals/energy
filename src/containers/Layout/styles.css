@@ -24,10 +24,20 @@ div.router {
     flex: 1;
 }
 
-div.container {
+.Container {
     display: flex;
     flex: 1;
     flex-direction: column;
+}
+
+.Content {
+  display: flex;
+  flex: 1;
+}
+
+.Content h1 {
+  font-size: 1.5rem;
+  color: var(--oc-gray-6);
 }
 
 a {

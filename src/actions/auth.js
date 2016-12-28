@@ -26,22 +26,23 @@ export const startAuthListener = () =>
       }))
     })
 
-export const authenticate = () =>
+export const authenticate = (redirect = '/') =>
   dispatch => {
     const loginAction = createAction(AuthActions.AUTH_USER_AUTHENTICATE)
     dispatch(loginAction({
-      status: AsyncStatus.REQUEST,
-      error: undefined
+      status: AsyncStatus.REQUEST
     }))
 
     const provider = new firebase.auth.GoogleAuthProvider()
     provider.addScope('profile')
     provider.addScope('email')
-    firebase.auth().signInWithRedirect(provider).then(result => {
+    firebase.auth().signInWithPopup(provider).then(result => {
       const user = result.user
       dispatch(loginAction({
         status: AsyncStatus.SUCCESS,
+        authenticated: true,
         user,
+        redirect: redirect,
         error: undefined
       }))
     })

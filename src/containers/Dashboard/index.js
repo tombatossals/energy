@@ -2,11 +2,10 @@ import React from 'react'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import { getMeasuresByDay } from '../../actions'
-import { AsyncStatus } from '../../lib/constants'
 import Chart from '../../components/Chart'
 import Button from '../../components/Button'
-import DatePicker from '../../components/DatePicker'
-import InfiniteCalendar from 'react-infinite-calendar'
+import Calendar from 'rc-calendar'
+import 'rc-calendar/assets/index.css'
 import './styles.css'
 
 class Dashboard extends React.Component {
@@ -35,6 +34,7 @@ class Dashboard extends React.Component {
   }
 
   dateSelected = (date) => {
+    console.log('date')
     this.props.getMeasuresByDay(date)
     this.hideDatePicker();
     this.setState({
@@ -46,7 +46,7 @@ class Dashboard extends React.Component {
     return (
       <div className='Dashboard'>
         <div className='Bar'>
-          <h1>Dashboard</h1>
+          <h2>Dashboard</h2>
           <Button
             onClick={this.showDatePicker}
             className='DatePicker'
@@ -54,19 +54,15 @@ class Dashboard extends React.Component {
             Select Date
           </Button>
         </div>
-        <h2>{ this.state.day.format("dddd, MMMM Do YYYY, h:mm:ss a") }</h2>
-        { this.props.measure.status === AsyncStatus.FAILED
-          ? <div>{ this.props.measure.error }</div>
-          : <div className='Chart'><Chart data={this.props.measure} /></div>
-        }
-        <InfiniteCalendar
-          height={400}
-          onSelect={this.props.onSelect}
-          maxDate={moment().subtract(2, 'day')}
-          max={moment().subtract(2, 'day')}
-        />
-
-        { this.state.showDatePicker && <DatePicker onClose={this.hideDatePicker} onSelect={this.dateSelected} /> }
+        <div className='ChartContainer'>
+          <Chart data={this.props.measure} />
+          <div className='Calendar'>
+            <Calendar
+              onSelect={this.dateSelected}
+              showToday={false}
+            />
+          </div>
+        </div>
       </div>
     )
   }

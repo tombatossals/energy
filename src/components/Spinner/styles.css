@@ -1,5 +1,5 @@
 .Spinner {
-  position: fixed;
+  position: absolute;
   z-index: 999;
   width: 25%;
   overflow: show;

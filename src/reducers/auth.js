@@ -5,6 +5,7 @@ const initialState = {
   authenticated: false,
   status: AsyncStatus.IDLE,
   user: {},
+  redirect: '/',
   error: undefined
 }
 

@@ -1,29 +1,59 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router'
 import { authenticate } from '../../actions'
 import { AsyncStatus } from '../../lib/constants'
+import { authPropType } from '../../lib/propTypes'
 import Button from '../../components/Button'
 import Spinner from '../../components/Spinner'
 import './styles.css'
 import google from './google.svg'
 
-const Login = (props) =>
-  <div className={`Login ${(props.auth.status !== AsyncStatus.SUCCESS || props.auth.authenticated) ? 'disabled' : ''}`}>
-    { props.auth.status === AsyncStatus.REQUEST &&
-      <Spinner />
+class Login extends React.Component {
+
+  constructor (props) {
+    super(props)
+    this.loginAndRedirect = this.loginAndRedirect.bind(this)
+    this.state = {
+      from: '/'
+    }
+  }
+
+  componentDidMount () {
+    if (this.props.location.state) {
+      this.setState({
+        from: this.props.location.state.from.pathname
+      })
+    }
+  }
+
+  loginAndRedirect () {
+    this.props.authenticate(this.state.from)
+  }
+
+  render () {
+    if (this.props.auth.authenticated) {
+      return <Redirect to={this.state.from} />
     }
 
-    <Button onClick={props.authenticate} color='Green'>
-      <img role='presentation' className='GoogleIcon' src={google} /> Iniciar Sesión con Google
-    </Button>
-  </div>
+    return (
+      <div className={`Login ${(this.props.auth.status !== AsyncStatus.SUCCESS || this.props.auth.authenticated) ? 'disabled' : ''}`}>
+        { this.props.auth.status === AsyncStatus.REQUEST &&
+          <Spinner />
+        }
+
+        <Button onClick={this.loginAndRedirect} color='Green'>
+          <img role='presentation' className='GoogleIcon' src={google} /> Iniciar Sesión con Google
+        </Button>
+      </div>
+    )
+  }
+}
 
 Login.propTypes = {
-  auth: React.PropTypes.shape({
-    status: React.PropTypes.oneOf(Object.values(AsyncStatus)),
-    authenticated: React.PropTypes.bool.isRequired
-  }).isRequired,
-  authenticate: React.PropTypes.func.isRequired
+  auth: authPropType.isRequired,
+  authenticate: React.PropTypes.func.isRequired,
+  location: React.PropTypes.object
 }
 
 const mapStateToProps = ({ auth }) => ({

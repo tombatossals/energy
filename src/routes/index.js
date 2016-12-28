@@ -2,35 +2,39 @@ import React, { Component } from 'react'
 import { Match, BrowserRouter, Miss, Redirect } from 'react-router'
 import { connect } from 'react-redux'
 import { startAuthListener } from '../actions'
+import { authPropType } from '../lib/propTypes'
 import Layout from '../containers/Layout'
 import Login from '../containers/Login'
 import Dashboard from '../containers/Dashboard'
 import Logout from '../containers/Logout'
+import Home from '../components/Home'
 
-const MatchWhenAuthed = ({ component: Component, authed, ...rest }) => (
+const MatchWhenAuthorized = ({ component: Component, auth, ...rest }) => (
   <Match
     {...rest}
-    render={(props) => authed === true
-      ? <Layout><Component {...props} {...rest} /></Layout>
+    render={(props) => auth.authenticated === true
+      ? <Layout><Component {...rest} /></Layout>
       : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />}
   />
 )
 
-const MatchAnonymous = ({ component: Component, ...rest }) => (
+MatchWhenAuthorized.propTypes = {
+  component: React.PropTypes.any.isRequired,
+  auth: authPropType.isRequired,
+  location: React.PropTypes.object
+}
+
+const MatchWithLayout = ({ component: Component, ...rest }) => (
   <Match
     {...rest}
-    render={(props) => <Layout><Component {...props} {...rest} /></Layout>}
+    render={(props) => <Layout><Component {...props} /></Layout>}
   />
 )
 
-const MatchWhenUnauthed = ({ component: Component, authed, ...rest }) => (
-  <Match
-    {...rest}
-    render={(props) => authed === false
-      ? <Layout><Component {...props} {...rest} /></Layout>
-      : <Redirect to='/' />}
-  />
-)
+MatchWithLayout.propTypes = {
+  component: React.PropTypes.any.isRequired
+}
+
 
 class Routes extends Component {
   componentDidMount () {
@@ -42,10 +46,10 @@ class Routes extends Component {
       <BrowserRouter>
         {({ router }) => (
           <div className='router'>
-            <MatchAnonymous pattern='/logout' exactly component={Logout} />
-            <MatchWhenAuthed exactly authed={this.props.auth.authenticated} pattern='/' component={Dashboard} {...this.props} />
-            <MatchWhenUnauthed authed={this.props.auth.authenticated} pattern='/login' component={Login} {...this.props} />
-            <MatchWhenAuthed authed={this.props.auth.authenticated} pattern='/dashboard' component={Dashboard} />
+            <MatchWithLayout pattern='/' exactly component={Home} />
+            <MatchWithLayout pattern='/logout' exactly component={Logout} />
+            <MatchWithLayout from={router} auth={this.props.auth} pattern='/login' component={Login} {...this.props} />
+            <MatchWhenAuthorized auth={this.props.auth} pattern='/dashboard' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />
           </div>
         )}
@@ -56,9 +60,7 @@ class Routes extends Component {
 
 Routes.propTypes = {
   startAuthListener: React.PropTypes.func.isRequired,
-  auth: React.PropTypes.shape({
-    authenticated: React.PropTypes.bool.isRequired
-  }).isRequired
+  auth: authPropType.isRequired
 }
 
 const mapStateToProps = ({ auth }) => ({

@@ -1,9 +1,26 @@
+.Dashboard {
+  flex: 1;
+}
+
 .Dashboard .Bar {
   display: flex;
 }
 
-.Dashboard .Bar h1 {
+.Dashboard .Bar h2 {
   margin-left: 4rem;
   color: var(--oc-gray-6);
   flex: 1;
+}
+
+.Dashboard .ChartContainer {
+  display: flex;
+}
+
+.Dashboard .ChartContainer .Chart {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.Dashboard .ChartContainer .Calendar {
+  margin-right: auto;
 }
