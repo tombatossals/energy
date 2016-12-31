@@ -1,16 +1,16 @@
 import React from 'react'
 import moment from 'moment'
 import { connect } from 'react-redux'
-import { getMeasuresByDay } from '../../actions'
+import { getWattsByDay } from '../../actions'
 import Chart from '../../components/Chart'
+import DatePicker from '../../components/DatePicker'
 import Button from '../../components/Button'
-import Calendar from 'rc-calendar'
-import 'rc-calendar/assets/index.css'
 import './styles.css'
 
 class Dashboard extends React.Component {
   constructor (props) {
     super(props)
+    this.dateSelected = this.dateSelected.bind(this)
     this.state = {
       showDatePicker: false,
       day: moment()
@@ -18,25 +18,11 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount () {
-    this.props.getMeasuresByDay(this.state.day.subtract(2, 'day'))
+    this.props.getWattsByDay(this.state.day.subtract(2, 'day'))
   }
 
-  showDatePicker = () => {
-    this.setState({
-      showDatePicker: true
-    })
-  }
-
-  hideDatePicker = () => {
-    this.setState({
-      showDatePicker: false
-    })
-  }
-
-  dateSelected = (date) => {
-    console.log('date')
-    this.props.getMeasuresByDay(date)
-    this.hideDatePicker();
+  dateSelected (date) {
+    this.props.getWattsByDay(date)
     this.setState({
       day: date
     })
@@ -46,22 +32,28 @@ class Dashboard extends React.Component {
     return (
       <div className='Dashboard'>
         <div className='Bar'>
-          <h2>Dashboard</h2>
-          <Button
-            onClick={this.showDatePicker}
-            className='DatePicker'
-          >
-            Select Date
-          </Button>
-        </div>
-        <div className='ChartContainer'>
-          <Chart data={this.props.measure} />
-          <div className='Calendar'>
-            <Calendar
-              onSelect={this.dateSelected}
-              showToday={false}
+          <div className='DatePicker'>
+            <DatePicker
+              inline
+              selected={this.state.day}
+              onChange={this.dateSelected}
             />
           </div>
+          <div className='Menu'>
+            <div className='MenuItem'>
+              <Button>Day</Button>
+              <Button>Week</Button>
+              <Button>Month</Button>
+              <Button>Year</Button>
+            </div>
+            <div className='MenuItem Filler' />
+            <div className='MenuItem Title'>
+            Energy consumption
+            </div>
+          </div>
+        </div>
+        <div className='ChartContainer'>
+          <Chart watt={this.props.watt} />
         </div>
       </div>
     )
@@ -69,12 +61,12 @@ class Dashboard extends React.Component {
 }
 
 Dashboard.propTypes = {
-  getMeasuresByDay: React.PropTypes.func.isRequired,
-  measure: React.PropTypes.object
+  getWattsByDay: React.PropTypes.func.isRequired,
+  watt: React.PropTypes.object
 }
 
-const mapStateToProps = ({ measure }) => ({
-  measure
+const mapStateToProps = ({ watt }) => ({
+  watt
 })
 
-export default connect(mapStateToProps, { getMeasuresByDay })(Dashboard)
+export default connect(mapStateToProps, { getWattsByDay })(Dashboard)

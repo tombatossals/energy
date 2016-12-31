@@ -35,7 +35,6 @@ MatchWithLayout.propTypes = {
   component: React.PropTypes.any.isRequired
 }
 
-
 class Routes extends Component {
   componentDidMount () {
     this.props.startAuthListener()

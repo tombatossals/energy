@@ -5,5 +5,5 @@ export {
 } from './auth'
 
 export {
-  getMeasuresByDay
-} from './measure'
+  getWattsByDay
+} from './watt'

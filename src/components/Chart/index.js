@@ -1,62 +1,41 @@
 import React from 'react'
 import { AsyncStatus } from '../../lib/constants'
-import { VictoryChart, VictoryArea, VictoryAxis, VictoryLine, VictoryTheme } from 'victory'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import Spinner from '../../components/Spinner'
 import './styles.css'
 
 export default class Chart extends React.Component {
+
   render () {
+    console.log(this.props.watt.status)
     return (
       <div className='Chart'>
-        { this.props.data.status === AsyncStatus.REQUEST && <Spinner maxWidth='120px' /> }
-        { this.props.data.status === AsyncStatus.FAILED && <div>{this.props.data.error}</div> }
-        { this.props.data.status === AsyncStatus.SUCCESS &&
-          <VictoryChart
-            theme={VictoryTheme.material}
-            width={500}
-            height={300}
-            responsive={false}
+        <Spinner
+          show={this.props.watt.status === AsyncStatus.REQUEST}
+          maxWidth='120px'
+        />
+        <ResponsiveContainer>
+          <AreaChart
+            data={this.props.watt.data}
           >
-            <VictoryAxis
-              dependentAxis
-            />
-            <VictoryAxis
-              tickValues={this.props.data.xaxis}
-              tickFormat={(y) => {
-                return (y % 2) ? this.props.data.xaxis[y - 1] : ''
-              }}
-              style={{
-                axisLabel: {fontSize: 16, padding: 20},
-                grid: {stroke: 'grey'},
-                ticks: {stroke: 'grey'},
-                tickLabels: {fontSize: 10, padding: 5, angle: 25}
-              }}
-            />
-            <VictoryArea
-              data={this.props.data.data}
-              style={{
-                data: {
-                  fill: 'blue',
-                  opacity: 0.4,
-                  width: 16.5
-                }
-              }}
-            />
-            <VictoryLine
-              label='Kwh'
-              data={this.props.data.data}
-              style={{
-                data: { opacity: 0.7, stroke: '#e95f46', strokeWidth: 4 }
-              }}
-              x='month'
-              y='profit'
-            />
-          </VictoryChart> }
+            <defs>
+              <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='1'>
+                <stop offset='5%' stopColor='#8884d8' stopOpacity={0.8} />
+                <stop offset='95%' stopColor='#fff' stopOpacity={0.4} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey='x' />
+            <YAxis />
+            <CartesianGrid strokeDasharray='3 3' />
+            <Tooltip />
+            <Area type='monotone' dataKey='y' stroke='#8884d8' fillOpacity={1} fill='url(#colorUv)' />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     )
   }
 }
 
 Chart.propTypes = {
-  data: React.PropTypes.object.isRequired
+  watt: React.PropTypes.object.isRequired
 }

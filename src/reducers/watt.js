@@ -3,7 +3,7 @@ import { AsyncStatus, DataActions } from '../lib/constants'
 
 const initialState = {
   status: AsyncStatus.IDLE,
-  data: {},
+  data: [],
   error: undefined
 }
 

@@ -42,8 +42,8 @@ class Login extends React.Component {
           <Spinner />
         }
 
-        <Button onClick={this.loginAndRedirect} color='Green'>
-          <img role='presentation' className='GoogleIcon' src={google} /> Iniciar Sesión con Google
+        <Button onClick={this.loginAndRedirect} color='Green' icon={google}>
+          Iniciar Sesión con Google
         </Button>
       </div>
     )

@@ -1,0 +1,14 @@
+.react-datepicker {
+  border: 0px;
+  border-radius: 0px;
+}
+
+.react-datepicker__header {
+  background-color: var(--oc-gray-1);
+  border-radius: 0;
+  border-bottom-color: var(--oc-gray-3);
+}
+
+.react-datepicker__month {
+  min-width: 228px;
+}

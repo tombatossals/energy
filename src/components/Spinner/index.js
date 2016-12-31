@@ -5,7 +5,7 @@ import './styles.css'
 const Spinner = (props) =>
   <img
     role='presentation'
-    className='Spinner'
+    className={`Spinner ${!props.show && 'Hide'}`}
     src={spinner}
     style={{
       maxWidth: props.maxWidth
@@ -13,11 +13,13 @@ const Spinner = (props) =>
   />
 
 Spinner.propTypes = {
-  maxWidth: React.PropTypes.string
+  maxWidth: React.PropTypes.string,
+  show: React.PropTypes.bool
 }
 
 Spinner.defaultProps = {
-  maxWidth: 'auto'
+  maxWidth: 'auto',
+  show: true
 }
 
 export default Spinner

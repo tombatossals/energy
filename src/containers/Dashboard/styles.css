@@ -1,26 +1,46 @@
 .Dashboard {
   flex: 1;
+  display: flex;
+  margin-top: 1rem;
 }
 
 .Dashboard .Bar {
   display: flex;
+  flex-direction: column;
 }
 
-.Dashboard .Bar h2 {
-  margin-left: 4rem;
-  color: var(--oc-gray-6);
-  flex: 1;
+.Dashboard .Bar .DatePicker {
+  display: flex;
+  justify-content: center;
+}
+
+.Dashboard .Bar .Menu {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.Dashboard .Bar .Menu .MenuItem {
+  display: flex;
+  justify-content: center;
+}
+
+.Dashboard .Bar .Menu .Title {
+  padding: .5rem;
+  justify-content: center;
+}
+
+.Dashboard .Bar .Menu .MenuItem p {
+  text-align: right;
 }
 
 .Dashboard .ChartContainer {
   display: flex;
+  flex: 1;
+  min-height: 200px;
+  height: 265px;
 }
 
 .Dashboard .ChartContainer .Chart {
   flex: 1;
-  margin-right: 1rem;
-}
-
-.Dashboard .ChartContainer .Calendar {
-  margin-right: auto;
 }

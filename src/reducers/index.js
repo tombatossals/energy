@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
 import auth from './auth'
-import measure from './measure'
+import watt from './watt'
 
 export default combineReducers({
   auth,
-  measure
+  watt
 })

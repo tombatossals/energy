@@ -1,0 +1,8 @@
+.Arrow {
+  background: red;
+  height: 18px;
+}
+
+.Arrow .Line {
+  stroke-width: 4;
+}
