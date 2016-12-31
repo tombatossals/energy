@@ -7,7 +7,6 @@ import './styles.css'
 export default class Chart extends React.Component {
 
   render () {
-    console.log(this.props.watt.status)
     return (
       <div className='Chart'>
         <Spinner

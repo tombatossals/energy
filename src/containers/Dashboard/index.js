@@ -11,21 +11,21 @@ class Dashboard extends React.Component {
   constructor (props) {
     super(props)
     this.dateSelected = this.dateSelected.bind(this)
-    this.state = {
-      showDatePicker: false,
-      day: moment()
-    }
   }
 
   componentDidMount () {
-    this.props.getWattsByDay(this.state.day.subtract(2, 'day'))
+    this.props.getWattsByDay(moment(this.props.params.date))
+  }
+
+
+  componentDidUpdate (prevProps, prevState) {
+    if (this.props.params.date !== prevProps.params.date) {
+      this.props.getWattsByDay(moment(this.props.params.date))
+    }
   }
 
   dateSelected (date) {
-    this.props.getWattsByDay(date)
-    this.setState({
-      day: date
-    })
+    this.context.router.transitionTo(`/dashboard/interval/day/date/${date.format('YYYYMMDD')}`)
   }
 
   render () {
@@ -35,7 +35,7 @@ class Dashboard extends React.Component {
           <div className='DatePicker'>
             <DatePicker
               inline
-              selected={this.state.day}
+              selected={moment(this.props.params.date)}
               onChange={this.dateSelected}
             />
           </div>
@@ -62,7 +62,17 @@ class Dashboard extends React.Component {
 
 Dashboard.propTypes = {
   getWattsByDay: React.PropTypes.func.isRequired,
-  watt: React.PropTypes.object
+  watt: React.PropTypes.object,
+  location: React.PropTypes.object,
+  pathname: React.PropTypes.string.isRequired,
+  params: React.PropTypes.shape({
+    interval: React.PropTypes.string.isRequired,
+    date: React.PropTypes.string.isRequired
+  })
+}
+
+Dashboard.contextTypes = {
+  router: React.PropTypes.object
 }
 
 const mapStateToProps = ({ watt }) => ({

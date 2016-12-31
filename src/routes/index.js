@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Match, BrowserRouter, Miss, Redirect } from 'react-router'
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { startAuthListener } from '../actions'
 import { authPropType } from '../lib/propTypes'
 import Layout from '../containers/Layout'
@@ -9,14 +10,13 @@ import Dashboard from '../containers/Dashboard'
 import Logout from '../containers/Logout'
 import Home from '../components/Home'
 
-const MatchWhenAuthorized = ({ component: Component, auth, ...rest }) => (
+const MatchWhenAuthorized = ({ component: Component, auth, ...rest }) =>
   <Match
     {...rest}
     render={(props) => auth.authenticated === true
-      ? <Layout><Component {...rest} /></Layout>
+      ? <Layout><Component {...props} /></Layout>
       : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />}
   />
-)
 
 MatchWhenAuthorized.propTypes = {
   component: React.PropTypes.any.isRequired,
@@ -24,12 +24,11 @@ MatchWhenAuthorized.propTypes = {
   location: React.PropTypes.object
 }
 
-const MatchWithLayout = ({ component: Component, ...rest }) => (
+const MatchWithLayout = ({ component: Component, ...rest }) =>
   <Match
     {...rest}
     render={(props) => <Layout><Component {...props} /></Layout>}
   />
-)
 
 MatchWithLayout.propTypes = {
   component: React.PropTypes.any.isRequired
@@ -48,7 +47,10 @@ class Routes extends Component {
             <MatchWithLayout pattern='/' exactly component={Home} />
             <MatchWithLayout pattern='/logout' exactly component={Logout} />
             <MatchWithLayout from={router} auth={this.props.auth} pattern='/login' component={Login} {...this.props} />
-            <MatchWhenAuthorized auth={this.props.auth} pattern='/dashboard' component={Dashboard} />
+            <Match pattern='/dashboard' exactly component={() =>
+              <Redirect to={`/dashboard/interval/day/date/${moment().format('YYYYMMDD')}`} />}
+            />
+            <MatchWhenAuthorized auth={this.props.auth} router={router} pattern='/dashboard/interval/:interval/date/:date' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />
           </div>
         )}
