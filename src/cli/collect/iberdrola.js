@@ -14,14 +14,12 @@ const mkdirSync = (path) => {
 }
 
 const config = getConfig().collect.iberdrola
-let endDate = moment().subtract(1, 'd')
 let initDate = moment().subtract(2, 'd')
+let endDate = moment().subtract(2, 'y')
 
 if (process.argv.length > 2) {
   initDate = moment(process.argv[2], 'DD-MM-YYYY')
-  if (process.argv.length > 3) {
-    endDate = moment(process.argv[2], 'DD-MM-YYYY')
-  }
+  endDate = moment(process.argv[2], 'DD-MM-YYYY').subtract(1, 'day')
 }
 
 mkdirSync('data')
@@ -93,7 +91,7 @@ const waitFor = async (data) => {
   // Wait for contract loaded
   await waitFor({ page, check: () => window.$('ul#InfoContratoTabs').is(':visible') })
 
-  while (initDate.isBefore(endDate)) {
+  while (initDate.isAfter(endDate)) {
     console.log(`Downloading ${initDate.format('DD-MM-YYYY')} into "data" folder...`)
     const url = getXLSXUrl(initDate)
     const b64string = await page.evaluate((url) => {
@@ -140,23 +138,28 @@ const waitFor = async (data) => {
       return encodeBase64(xhr.responseText)
     }, url)
 
-    if (!b64string) continue
+    if (!b64string) {
+      console.log(`Can't find anything on ${moment(initDate, 'DD-MM-YYYY')}`)
+      initDate.subtract(1, 'd')
+      continue
+    }
 
     const data = XLSX.read(Buffer.from(b64string, 'base64')).Sheets.Consumo
 
-    const result = {
-      date: moment(initDate, 'DD-MM-YYYY').toJSON(),
-      values: []
-    }
-
+    const result = []
     Object.keys(data).map(function (key, index) {
       if (key[0] === 'B' && data[key].v && data[key].v !== 'Mi consumo') {
-        result.values.push(data[key].v)
+        const hour = parseInt(index / 2, 10)
+        result.push({
+          date: (hour === 24 ? moment(initDate).add(1, 'day').format('YYYYMMDD') : initDate.format('YYYYMMDD')),
+          time: moment(initDate).add(hour, 'hour').format('HH:mm:ss'),
+          value: data[key].v
+        })
       }
     })
 
-    fs.writeFileSync('data/' + initDate.format('DD-MM-YYYY') + '.json', JSON.stringify(result))
-    initDate.add(1, 'd')
+    fs.writeFileSync('data/' + initDate.format('DD-MM-YYYY') + '.json', JSON.stringify(result, null, 4))
+    initDate.subtract(1, 'd')
   }
 
   await instance.exit()

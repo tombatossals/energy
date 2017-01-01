@@ -10,7 +10,9 @@ const ticks = {
     '19:00h', '20:00h', '21:00h', '22:00h', '23:00h', '24:00h' ]
 }
 
-export const getWattsByDay = (date) =>
+const emailToKey = email => email.replace(/[.]/g, '%20')
+
+export const getWattsByInterval = (date, interval) =>
   dispatch => {
     const getWatts = createAction(DataActions.DATA_FETCH)
     dispatch(getWatts({
@@ -19,22 +21,22 @@ export const getWattsByDay = (date) =>
       error: undefined
     }))
 
-    firebase.database().ref(`measures/${date.format('YYYYMMDD')}`).once('value').then((measures) => {
+    var user = firebase.auth().currentUser
+    firebase.database().ref(emailToKey(user.email)).startAt(0).once('child_added', (measures) => {
+      console.log(measures)
       const getWatts = createAction(DataActions.DATA_FETCH)
-      if (measures && measures.val()) {
-      }
       if (measures.val()) {
         return dispatch(getWatts({
           status: AsyncStatus.SUCCESS,
           data: measures.val().values.map((measure, index) => ({ x: ticks['daily'][index], y: measure })),
           error: undefined
         }))
-      } else {
-        return dispatch(getWatts({
-          status: AsyncStatus.FAILED,
-          data: ticks.daily.map(hour => ({ x: hour, y: 0 })),
-          error: 'No data available'
-        }))
       }
+
+      return dispatch(getWatts({
+        status: AsyncStatus.FAILED,
+        data: ticks.daily.map(hour => ({ x: hour, y: 0 })),
+        error: 'No data available'
+      }))
     })
   }

@@ -1,7 +1,8 @@
 import React from 'react'
 import moment from 'moment'
+import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { getWattsByDay } from '../../actions'
+import { getWattsByInterval } from '../../actions'
 import Chart from '../../components/Chart'
 import DatePicker from '../../components/DatePicker'
 import Button from '../../components/Button'
@@ -14,13 +15,14 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount () {
-    this.props.getWattsByDay(moment(this.props.params.date))
+    this.props.getWattsByInterval(moment(this.props.params.date), this.props.params.interval)
   }
 
 
   componentDidUpdate (prevProps, prevState) {
-    if (this.props.params.date !== prevProps.params.date) {
-      this.props.getWattsByDay(moment(this.props.params.date))
+    if (this.props.params.date !== prevProps.params.date ||
+        this.props.params.interval !== prevProps.params.interval) {
+      this.props.getWattsByInterval(moment(this.props.params.date), this.props.params.interval)
     }
   }
 
@@ -41,10 +43,18 @@ class Dashboard extends React.Component {
           </div>
           <div className='Menu'>
             <div className='MenuItem'>
-              <Button>Day</Button>
-              <Button>Week</Button>
-              <Button>Month</Button>
-              <Button>Year</Button>
+              <Link className='NoUnderline' to={`/dashboard/interval/day/date/${this.props.params.date}`}>
+                <Button active={this.props.params.interval === 'day'}>Day</Button>
+              </Link>
+              <Link className='NoUnderline' to={`/dashboard/interval/week/date/${this.props.params.date}`}>
+                <Button active={this.props.params.interval === 'week'}>Week</Button>
+              </Link>
+              <Link className='NoUnderline' to={`/dashboard/interval/month/date/${this.props.params.date}`}>
+                <Button active={this.props.params.interval === 'month'}>Month</Button>
+              </Link>
+              <Link className='NoUnderline' to={`/dashboard/interval/year/date/${this.props.params.date}`}>
+                <Button active={this.props.params.interval === 'year'}>Year</Button>
+              </Link>
             </div>
             <div className='MenuItem Filler' />
             <div className='MenuItem Title'>
@@ -61,7 +71,7 @@ class Dashboard extends React.Component {
 }
 
 Dashboard.propTypes = {
-  getWattsByDay: React.PropTypes.func.isRequired,
+  getWattsByInterval: React.PropTypes.func.isRequired,
   watt: React.PropTypes.object,
   location: React.PropTypes.object,
   pathname: React.PropTypes.string.isRequired,
@@ -79,4 +89,4 @@ const mapStateToProps = ({ watt }) => ({
   watt
 })
 
-export default connect(mapStateToProps, { getWattsByDay })(Dashboard)
+export default connect(mapStateToProps, { getWattsByInterval })(Dashboard)

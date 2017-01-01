@@ -19,6 +19,10 @@
   max-height: 2rem;
 }
 
+a .Button:hover {
+  text-decoration: none;
+}
+
 .Button.Icon {
 	padding: .2rem .5rem;
 }
@@ -34,9 +38,14 @@
   background-color: var(--oc-indigo-5);
 }
 
+.Button.Blue.Active
+{
+  background-color: var(--oc-indigo-8);
+}
+
 .Button.Blue:hover
 {
-  background-color: var(--oc-indigo-4);
+  background-color: var(--oc-indigo-3);
 }
 
 .Button.Red

@@ -1,20 +1,26 @@
 import firebase from 'firebase-admin'
-import moment from 'moment'
 import fs from 'fs'
 import path from 'path'
 import { getConfig } from '../config'
 
-const config = getConfig().import.firebase
+const userConfig = getConfig().collect.iberdrola
+const firebaseConfig = getConfig().import.firebase
 
 firebase.initializeApp({
-  credential: firebase.credential.cert(config.credentials),
-  databaseURL: config.databaseURL
+  credential: firebase.credential.cert(firebaseConfig.credentials),
+  databaseURL: firebaseConfig.databaseURL
 })
 
 const db = firebase.database()
 
-const addJSON = (db, json) =>
-  db.ref('measures/' + moment(json.date).format('YYYYMMDD')).set({ values: json.values })
+const flatten = list =>
+  list.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), [])
+
+const emailToKey = email => email.replace(/[.]/g, '%20')
+
+const addJSON = (db, json) => {
+  db.ref(`${emailToKey(userConfig.username)}/${userConfig.contract}`).set(json)
+}
 
 fs.readdir('data', (err, list) => {
   if (err) {
@@ -26,12 +32,12 @@ fs.readdir('data', (err, list) => {
     new Promise((resolve, reject) =>
       fs.readFile(path.join('data', file), (err, data) => {
         if (err) return reject(err)
-        resolve(addJSON(db, JSON.parse(data)))
+        resolve(JSON.parse(data))
       })
     )
   )
 
-  Promise.all(promises).then(() => {
-    process.exit()
+  Promise.all(promises).then((dataArray) => {
+    addJSON(db, flatten(dataArray))
   })
 })

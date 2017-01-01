@@ -5,5 +5,5 @@ export {
 } from './auth'
 
 export {
-  getWattsByDay
+  getWattsByInterval
 } from './watt'
