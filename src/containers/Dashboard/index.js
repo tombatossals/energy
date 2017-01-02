@@ -36,9 +36,10 @@ class Dashboard extends React.Component {
         <div className='Bar'>
           <div className='DatePicker'>
             <DatePicker
-              inline
-              selected={moment(this.props.params.date)}
-              onChange={this.dateSelected}
+              interval={this.props.params.interval}
+              initialVisibleMonth={() => moment(this.props.params.date)}
+              date={moment(this.props.params.date)}
+              onDateSelected={this.dateSelected}
             />
           </div>
           <div className='Menu'>
@@ -56,10 +57,7 @@ class Dashboard extends React.Component {
                 <Button active={this.props.params.interval === 'year'}>Year</Button>
               </Link>
             </div>
-            <div className='MenuItem Filler' />
-            <div className='MenuItem Title'>
-            Energy consumption
-            </div>
+            <div className='MenuItem Title'>Energy consumption</div>
           </div>
         </div>
         <div className='ChartContainer'>

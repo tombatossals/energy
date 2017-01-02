@@ -3,7 +3,6 @@ import fs from 'fs'
 import path from 'path'
 import { getConfig } from '../config'
 
-const userConfig = getConfig().collect.iberdrola
 const firebaseConfig = getConfig().import.firebase
 
 firebase.initializeApp({
@@ -16,10 +15,23 @@ const db = firebase.database()
 const flatten = list =>
   list.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), [])
 
-const emailToKey = email => email.replace(/[.]/g, '%20')
+const stringToKey = str => str.replace(/[.]/g, '%20')
 
-const addJSON = (db, json) => {
-  db.ref(`${emailToKey(userConfig.username)}/${userConfig.contract}`).set(json)
+const addUserLocation = (db, user, location) =>
+  db.ref(`users/${stringToKey(user)}/locations/${stringToKey(location)}`).set(true)  
+
+const addUserMeasures = (db, user, location, measures) =>
+  db.ref(`measures/${stringToKey(location)}`).set([]).then(() => 
+    measures.reduce((prev, measure) =>
+      db.ref(`measures/${stringToKey(location)}`).push(measure)
+    , Promise.resolve())
+  )
+
+if (process.argv.length > 2 && process.argv[2] === 'clean') {
+  const { username, contract } = getConfig().collect.iberdrola
+  addUserLocation(db, username, contract).then(() =>  
+    addUserMeasures(db, username, contract, []).then(process.exit)
+  )
 }
 
 fs.readdir('data', (err, list) => {
@@ -37,7 +49,9 @@ fs.readdir('data', (err, list) => {
     )
   )
 
-  Promise.all(promises).then((dataArray) => {
-    addJSON(db, flatten(dataArray))
-  })
+  const { username, contract } = getConfig().collect.iberdrola
+  Promise.all(promises).then(dataArray =>
+    addUserLocation(db, username, contract).then(() =>
+      addUserMeasures(db, username, contract, flatten(dataArray)).then(process.exit)
+  ))
 })

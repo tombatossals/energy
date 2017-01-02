@@ -15,7 +15,7 @@ const mkdirSync = (path) => {
 
 const config = getConfig().collect.iberdrola
 let initDate = moment().subtract(2, 'd')
-let endDate = moment().subtract(2, 'y')
+let endDate = moment().subtract(5, 'y')
 
 if (process.argv.length > 2) {
   initDate = moment(process.argv[2], 'DD-MM-YYYY')
@@ -152,7 +152,7 @@ const waitFor = async (data) => {
         const hour = parseInt(index / 2, 10)
         result.push({
           date: (hour === 24 ? moment(initDate).add(1, 'day').format('YYYYMMDD') : initDate.format('YYYYMMDD')),
-          time: moment(initDate).add(hour, 'hour').format('HH:mm:ss'),
+          time: moment(initDate).add(hour, 'hour').format('HH:00:00'),
           value: data[key].v
         })
       }

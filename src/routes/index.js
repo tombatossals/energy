@@ -48,7 +48,7 @@ class Routes extends Component {
             <MatchWithLayout pattern='/logout' exactly component={Logout} />
             <MatchWithLayout from={router} auth={this.props.auth} pattern='/login' component={Login} {...this.props} />
             <Match pattern='/dashboard' exactly component={() =>
-              <Redirect to={`/dashboard/interval/day/date/${moment().format('YYYYMMDD')}`} />}
+              <Redirect to={`/dashboard/interval/day/date/${moment().subtract(2, 'day').format('YYYYMMDD')}`} />}
             />
             <MatchWhenAuthorized auth={this.props.auth} router={router} pattern='/dashboard/interval/:interval/date/:date' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />

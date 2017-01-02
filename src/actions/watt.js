@@ -5,9 +5,9 @@ import { getFirebase } from '../lib/firebase'
 const firebase = getFirebase()
 
 const ticks = {
-  daily: [ '01:00h', '02:00h', '03:00h', '04:00h', '05:00h', '06:00h', '07:00h', '08:00h', '09:00h',
-    '10:00h', '11:00h', '12:00h', '13:00h', '14:00h', '15:00h', '16:00h', '17:00h', '18:00h',
-    '19:00h', '20:00h', '21:00h', '22:00h', '23:00h', '24:00h' ]
+  daily: [ '00:00:00', '01:00:00', '02:00:00', '03:00:00', '04:00:00', '05:00:00', '06:00:00', '07:00:00', '08:00:00', '09:00:00',
+    '10:00:00', '11:00:00', '12:00:00', '13:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00', '18:00:00',
+    '19:00:00', '20:00:00', '21:00:00', '22:00:00', '23:00:00' ]
 }
 
 const emailToKey = email => email.replace(/[.]/g, '%20')
@@ -22,21 +22,23 @@ export const getWattsByInterval = (date, interval) =>
     }))
 
     var user = firebase.auth().currentUser
-    firebase.database().ref(emailToKey(user.email)).startAt(0).once('child_added', (measures) => {
-      console.log(measures)
-      const getWatts = createAction(DataActions.DATA_FETCH)
-      if (measures.val()) {
-        return dispatch(getWatts({
-          status: AsyncStatus.SUCCESS,
-          data: measures.val().values.map((measure, index) => ({ x: ticks['daily'][index], y: measure })),
-          error: undefined
-        }))
-      }
+    firebase.database().ref(`users/${emailToKey(user.email)}`).once('value', locations => {
+      const location = Object.keys(locations.val().locations)[0]
+      firebase.database().ref(`measures/${location}`).orderByChild('date').equalTo(date.format('YYYYMMDD')).once('value', (measures) => {
+        const getWatts = createAction(DataActions.DATA_FETCH)        
+        if (measures.val()) {
+          return dispatch(getWatts({
+            status: AsyncStatus.SUCCESS,
+            data: Object.values(measures.val()).slice().sort((t1, t2) => parseInt(t1.time.split(':')[0], 10) - parseInt(t2.time.split(':'), 10)),
+            error: undefined
+          }))
+        }
 
-      return dispatch(getWatts({
-        status: AsyncStatus.FAILED,
-        data: ticks.daily.map(hour => ({ x: hour, y: 0 })),
-        error: 'No data available'
-      }))
+        return dispatch(getWatts({
+          status: AsyncStatus.FAILED,
+          data: ticks.daily.map(hour => ({ x: hour, y: 0 })),
+          error: 'No data available'
+        }))
+      })
     })
   }
