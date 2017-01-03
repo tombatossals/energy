@@ -24,8 +24,8 @@ export const getWattsByInterval = (date, interval) =>
     var user = firebase.auth().currentUser
     firebase.database().ref(`users/${emailToKey(user.email)}`).once('value', locations => {
       const location = Object.keys(locations.val().locations)[0]
-      firebase.database().ref(`measures/${location}`).orderByChild('date').equalTo(date.format('YYYYMMDD')).once('value', (measures) => {
-        const getWatts = createAction(DataActions.DATA_FETCH)        
+      firebase.database().ref(`measures/${location}`).orderByChild('date').equalTo(date.format('YYYYMMDD')).once('value').then(measures => {
+        const getWatts = createAction(DataActions.DATA_FETCH)
         if (measures.val()) {
           return dispatch(getWatts({
             status: AsyncStatus.SUCCESS,
@@ -33,10 +33,9 @@ export const getWattsByInterval = (date, interval) =>
             error: undefined
           }))
         }
-
-        return dispatch(getWatts({
+        dispatch(getWatts({
           status: AsyncStatus.FAILED,
-          data: ticks.daily.map(hour => ({ x: hour, y: 0 })),
+          data: ticks.daily.map(hour => ({ time: hour, value: 0 })),
           error: 'No data available'
         }))
       })

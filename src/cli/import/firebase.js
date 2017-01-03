@@ -18,10 +18,10 @@ const flatten = list =>
 const stringToKey = str => str.replace(/[.]/g, '%20')
 
 const addUserLocation = (db, user, location) =>
-  db.ref(`users/${stringToKey(user)}/locations/${stringToKey(location)}`).set(true)  
+  db.ref(`users/${stringToKey(user)}/locations/${stringToKey(location)}`).set(true)
 
 const addUserMeasures = (db, user, location, measures) =>
-  db.ref(`measures/${stringToKey(location)}`).set([]).then(() => 
+  db.ref(`measures/${stringToKey(location)}`).set([]).then(() =>
     measures.reduce((prev, measure) =>
       db.ref(`measures/${stringToKey(location)}`).push(measure)
     , Promise.resolve())
@@ -29,7 +29,7 @@ const addUserMeasures = (db, user, location, measures) =>
 
 if (process.argv.length > 2 && process.argv[2] === 'clean') {
   const { username, contract } = getConfig().collect.iberdrola
-  addUserLocation(db, username, contract).then(() =>  
+  addUserLocation(db, username, contract).then(() =>
     addUserMeasures(db, username, contract, []).then(process.exit)
   )
 }

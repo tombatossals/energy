@@ -5,6 +5,11 @@ export const AsyncStatus = {
   FAILED: 'FAILED'
 }
 
+export const Intervals = {
+  DAY: 'day',
+  MONTH: 'month'
+}
+
 export const AuthActions = {
   AUTH_USER_AUTHENTICATE: 'AUTH_USER_AUTHENTICATE',
   AUTH_USER_LOGOUT: 'AUTH_USER_LOGOUT',

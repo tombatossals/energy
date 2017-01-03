@@ -6,6 +6,7 @@ import { getWattsByInterval } from '../../actions'
 import Chart from '../../components/Chart'
 import DatePicker from '../../components/DatePicker'
 import Button from '../../components/Button'
+import { Intervals } from '../../lib/constants'
 import './styles.css'
 
 class Dashboard extends React.Component {
@@ -18,7 +19,6 @@ class Dashboard extends React.Component {
     this.props.getWattsByInterval(moment(this.props.params.date), this.props.params.interval)
   }
 
-
   componentDidUpdate (prevProps, prevState) {
     if (this.props.params.date !== prevProps.params.date ||
         this.props.params.interval !== prevProps.params.interval) {
@@ -28,6 +28,10 @@ class Dashboard extends React.Component {
 
   dateSelected (date) {
     this.context.router.transitionTo(`/dashboard/interval/day/date/${date.format('YYYYMMDD')}`)
+  }
+
+  upperFirst (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
   render () {
@@ -44,18 +48,11 @@ class Dashboard extends React.Component {
           </div>
           <div className='Menu'>
             <div className='MenuItem'>
-              <Link className='NoUnderline' to={`/dashboard/interval/day/date/${this.props.params.date}`}>
-                <Button active={this.props.params.interval === 'day'}>Day</Button>
-              </Link>
-              <Link className='NoUnderline' to={`/dashboard/interval/week/date/${this.props.params.date}`}>
-                <Button active={this.props.params.interval === 'week'}>Week</Button>
-              </Link>
-              <Link className='NoUnderline' to={`/dashboard/interval/month/date/${this.props.params.date}`}>
-                <Button active={this.props.params.interval === 'month'}>Month</Button>
-              </Link>
-              <Link className='NoUnderline' to={`/dashboard/interval/year/date/${this.props.params.date}`}>
-                <Button active={this.props.params.interval === 'year'}>Year</Button>
-              </Link>
+              {Object.values(Intervals).map(interval =>
+                <Link key={interval} className='NoUnderline' to={`/dashboard/interval/${interval}/date/${this.props.params.date}`}>
+                  <Button active={this.props.params.interval === interval}>{this.upperFirst(interval)}</Button>
+                </Link>
+              )}
             </div>
             <div className='MenuItem Title'>Energy consumption</div>
           </div>
