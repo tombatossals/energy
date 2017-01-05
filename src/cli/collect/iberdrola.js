@@ -139,7 +139,7 @@ const waitFor = async (data) => {
     }, url)
 
     if (!b64string) {
-      console.log(`Can't find anything on ${moment(initDate, 'DD-MM-YYYY')}`)
+      console.log(`Can't find anything on ${initDate, 'DD-MM-YYYY'}`)
       initDate.subtract(1, 'd')
       continue
     }
@@ -151,8 +151,8 @@ const waitFor = async (data) => {
       if (key[0] === 'B' && data[key].v && data[key].v !== 'Mi consumo') {
         const hour = parseInt(index / 2, 10)
         result.push({
-          date: (hour === 24 ? moment(initDate).add(1, 'day').format('YYYYMMDD') : initDate.format('YYYYMMDD')),
-          time: moment(initDate).add(hour, 'hour').format('HH:00:00'),
+          date: (hour === 24 ? initDate.clone().add(1, 'day').format('YYYYMMDD') : initDate.format('YYYYMMDD')),
+          time: initDate.clone().add(hour, 'hour').startOf('hour').toISOString(),          
           value: data[key].v
         })
       }

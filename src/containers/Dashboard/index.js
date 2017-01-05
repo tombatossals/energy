@@ -27,7 +27,7 @@ class Dashboard extends React.Component {
   }
 
   dateSelected (date) {
-    this.context.router.transitionTo(`/dashboard/interval/day/date/${date.format('YYYYMMDD')}`)
+    this.context.router.transitionTo(`/dashboard/interval/${this.props.params.interval}/date/${date.format('YYYYMMDD')}`)
   }
 
   upperFirst (str) {
@@ -49,8 +49,10 @@ class Dashboard extends React.Component {
           <div className='Menu'>
             <div className='MenuItem'>
               {Object.values(Intervals).map(interval =>
-                <Link key={interval} className='NoUnderline' to={`/dashboard/interval/${interval}/date/${this.props.params.date}`}>
-                  <Button active={this.props.params.interval === interval}>{this.upperFirst(interval)}</Button>
+                <Link className='NoUnderline' key={interval} to={`/dashboard/interval/${interval}/date/${this.props.params.date}`}>
+                  <Button active={this.props.params.interval === interval}>
+                    {this.upperFirst(interval)}
+                  </Button>
                 </Link>
               )}
             </div>
@@ -58,7 +60,7 @@ class Dashboard extends React.Component {
           </div>
         </div>
         <div className='ChartContainer'>
-          <Chart watt={this.props.watt} />
+          <Chart watt={this.props.watt} interval={this.props.params.interval} />
         </div>
       </div>
     )

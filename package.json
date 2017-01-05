@@ -36,6 +36,7 @@
     "standard": "^8.3.0"
   },
   "dependencies": {
+    "@tombatossals/react-dates": "^4.3.0",
     "babel-cli": "^6.18.0",
     "chokidar": "^1.6.1",
     "eslint-config-standard-react": "^4.2.0",
@@ -49,7 +50,6 @@
     "react": "^15.4.1",
     "react-addons-css-transition-group": "^15.4.1",
     "react-addons-shallow-compare": "^15.4.1",
-    "react-dates": "^4.3.0",
     "react-dom": "^15.4.1",
     "react-helmet": "^3.3.0",
     "react-redux": "^5.0.1",

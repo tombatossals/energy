@@ -1,24 +1,35 @@
 import React from 'react'
-import { DayPicker } from 'react-dates'
+import { DayPicker, MonthPicker } from '@tombatossals/react-dates';
 import { Intervals } from '../../lib/constants'
-import 'react-dates/lib/css/_datepicker.css'
+import '@tombatossals/react-dates/lib/css/_datepicker.css'
 import './styles.css'
 
 const CustomDatePicker = (props) => {
-  const onDayClick = (day, modifiers, e) =>
-    props.onDateSelected(day)
+  const onDateClick = (date, modifiers, e) =>
+    props.onDateSelected(date)
 
-  const onDayMouseEnter = (day, modifiers) => modifiers.push({ hover: true })
+  const onMouseEnter = (date, modifiers) => modifiers.push({ hover: true })
   return (
-    <DayPicker
-      id={`${props.interval}-picker`}
-      onDayClick={onDayClick}
-      modifiers={{ selected: (day) => {
-        return props.date.startOf('day').isSame(day.startOf('day'))
-      }}}
-      onDayMouseEnter={onDayMouseEnter}
-      {...props}
-    />
+    props.interval === 'day'
+      ? <DayPicker
+          id={`${props.interval}-picker`}
+          onDayClick={onDateClick}
+          modifiers={{ selected: (day) => {
+            return props.date.startOf('day').isSame(day.startOf('day'))
+          }}}
+          onDayMouseEnter={onMouseEnter}
+          {...props}
+        />
+      : <MonthPicker
+          id={`${props.interval}-picker`}
+          initialVisibleYear={() => props.date}
+          onMonthClick={onDateClick}
+          modifiers={{ selected: (month) => {
+            return props.date.startOf('month').isSame(month.startOf('month'))
+          }}}
+          onMonthMouseEnter={onMouseEnter}
+          {...props}    
+        />
   )
 }
 

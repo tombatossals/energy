@@ -1,6 +1,6 @@
 import React from 'react'
 import moment from 'moment'
-import { AsyncStatus } from '../../lib/constants'
+import { AsyncStatus, Intervals } from '../../lib/constants'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import Spinner from '../../components/Spinner'
 import './styles.css'
@@ -26,7 +26,10 @@ export default class Chart extends React.Component {
             </defs>
             <XAxis
               dataKey='time'
-              tickFormatter={time => `${moment(time, 'HH:mm:ss').format('HH:mm')}h`}
+              tickFormatter={
+                this.props.interval === Intervals.DAY
+                ? time => `${moment(time).format('HH:mm')}h`
+                : time => `${moment(time).format('HH:mm')}h` }
             />
             <YAxis
               type='number'
@@ -50,5 +53,6 @@ export default class Chart extends React.Component {
 }
 
 Chart.propTypes = {
-  watt: React.PropTypes.object.isRequired
+  watt: React.PropTypes.object.isRequired,
+  interval: React.PropTypes.oneOf(Object.values(Intervals))
 }
