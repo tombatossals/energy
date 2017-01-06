@@ -5,6 +5,13 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Spinner from '../../components/Spinner'
 import './styles.css'
 
+const xformatter = {
+  [Intervals.DAY]: time => `${moment(time).format('HH:mm')}h`,
+  [Intervals.WEEK]: time => moment(time).format('DD') === '01' ? moment(time).format('DD MMM') : moment(time).format('DD'),
+  [Intervals.MONTH]: time => moment(time).format('DD-MM-YYYY'),
+  [Intervals.YEAR]: time => moment(time).format('MMM')
+}
+
 export default class Chart extends React.Component {
 
   render () {
@@ -26,10 +33,7 @@ export default class Chart extends React.Component {
             </defs>
             <XAxis
               dataKey='time'
-              tickFormatter={
-                this.props.interval === Intervals.DAY
-                ? time => `${moment(time).format('HH:mm')}h`
-                : time => `${moment(time).format('HH:mm')}h` }
+              tickFormatter={xformatter[this.props.interval]}
             />
             <YAxis
               type='number'

@@ -7,7 +7,9 @@ export const AsyncStatus = {
 
 export const Intervals = {
   DAY: 'day',
-  MONTH: 'month'
+  WEEK: 'week',
+  MONTH: 'month',
+  YEAR: 'year'
 }
 
 export const AuthActions = {
