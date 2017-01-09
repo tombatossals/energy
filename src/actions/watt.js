@@ -59,40 +59,40 @@ const monthsOfYear = (date) => {
 
 const groupByWeekDay = measures => {
   const result = {}
-  Object.values(measures).map(measure => {
+  for (let measure of Object.values(measures)) {
     result.hasOwnProperty(measure.date)
       ? result[measure.date].value += measure.value
       : result[measure.date] = {
         time: moment(measure.time).endOf('day').toISOString(),
         value: measure.value
       }
-  })
+  }
   return Object.values(result).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
 }
 
 const groupByMonthWeek = measures => {
   const result = {}
-  Object.values(measures).map(measure => {
+  for (let measure of Object.values(measures)) {
     result.hasOwnProperty(moment(measure.time).startOf('week').format('MMDD'))
       ? result[moment(measure.time).startOf('week').format('MMDD')].value += measure.value
       : result[moment(measure.time).startOf('week').format('MMDD')] = {
         time: moment(measure.time).startOf('week').toISOString(),
         value: measure.value
       }
-  })
+  }
   return Object.values(result).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
 }
 
 const groupByYearMonth = measures => {
   const result = {}
-  Object.values(measures).map(measure => {
+  for (let measure of Object.values(measures)) {
     result.hasOwnProperty(moment(measure.time).startOf('month').format('MM'))
       ? result[moment(measure.time).startOf('month').format('MM')].value += measure.value
       : result[moment(measure.time).startOf('month').format('MM')] = {
         time: moment(measure.time).startOf('month').toISOString(),
         value: measure.value
       }
-  })
+  }
   return Object.values(result).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
 }
 
