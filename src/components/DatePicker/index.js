@@ -1,58 +1,88 @@
 import React from 'react'
+import moment from 'moment'
 import { DayPicker, MonthPicker } from '@tombatossals/react-dates'
 import { Intervals } from '../../lib/constants'
 import '@tombatossals/react-dates/lib/css/_datepicker.css'
 import './styles.css'
 
-const CustomDatePicker = (props) => {
-  const onDateClick = (date, modifiers, e) =>
-    props.onDateSelected(date)
+const isSameInterval = (a, b, interval) =>
+  moment.isMoment(a) && moment.isMoment(b) && a.isSame(b, interval)
 
-  const onMouseEnter = (date, modifiers) => modifiers.push({ hover: true })
-  return (
-    props.interval === Intervals.DAY
-    ? <DayPicker
-      id={`${props.interval}-picker`}
-      onDayClick={onDateClick}
-      modifiers={{ selected: (day) => {
-        return props.date.startOf('day').isSame(day.startOf('day'))
-      }}}
-      onDayMouseEnter={onMouseEnter}
-      {...props}
-    />
-    : props.interval === Intervals.WEEK
-      ? <DayPicker
-        id={`${props.interval}-picker`}
-        onDayClick={onDateClick}
+class CustomDatePicker extends React.Component {
+  constructor(props) {
+    super(props)
+    this.onDateClick = this.onDateClick.bind(this)
+    this.onMouseEnter = this.onMouseEnter.bind(this)
+    this.onMouseLeave = this.onMouseLeave.bind(this)   
+    this.getComponent = this.getComponent.bind(this) 
+    this.state = {
+      hoverDate: null
+    }
+  }
+
+  onDateClick(date) {
+    this.props.onDateSelected(date)
+  }
+
+  onMouseEnter(date) {
+    this.setState({ hoverDate: date })
+  }
+
+  onMouseLeave() {
+    this.setState({
+      hoverDate: null,
+    });
+  }
+
+  getComponent() {
+    const modifiers = {
+      selected: date => isSameInterval(this.props.date, date, this.props.interval),
+      hovered: date => isSameInterval(this.state.hoverDate, date, this.props.interval),
+      past: date => date.isAfter(moment().subtract(2, 'day'))
+    }
+    
+    return {
+      [Intervals.DAY]: <DayPicker
+        id={this.props.interval}
+        onDayClick={this.onDateClick}
+        modifiers={modifiers}
+        onDayMouseEnter={this.onMouseEnter}
+        onDayMouseLeave={this.onMouseLeave}        
+        {...this.props}
+      />,
+      [Intervals.WEEK]: <DayPicker
+        id={this.props.interval}
+        onDayClick={this.onDateClick}
         enableOutsideDays
-        modifiers={{ selected: (day) => {
-          return props.date.clone().startOf('week').isSame(day.clone().startOf('week'))
-        }}}
-        onDayMouseEnter={onMouseEnter}
-        {...props}
+        modifiers={modifiers}
+        onDayMouseEnter={this.onMouseEnter}
+        onDayMouseLeave={this.onMouseLeave}                
+        {...this.props}
+      />,
+      [Intervals.MONTH]: <MonthPicker
+        id={this.props.interval}
+        initialVisibleYear={this.props.date}
+        onMonthClick={this.onDateClick}
+        modifiers={modifiers}
+        onMonthMouseEnter={this.onMouseEnter}
+        onMonthMouseLeave={this.onMouseLeave}                
+        {...this.props}
+      />,
+      [Intervals.YEAR]: <MonthPicker
+        id={this.props.interval}
+        initialVisibleYear={this.props.date}
+        onMonthClick={this.onDateClick}
+        modifiers={modifiers}
+        onMonthMouseEnter={this.onMouseEnter}
+        onMonthMouseLeave={this.onMouseLeave}                
+        {...this.props}
       />
-      : props.interval === Intervals.MONTH
-        ? <MonthPicker
-          id={`${props.interval}-picker`}
-          initialVisibleYear={props.date}
-          onMonthClick={onDateClick}
-          modifiers={{ selected: (month) => {
-            return props.date.startOf('month').isSame(month.startOf('month'))
-          }}}
-          onMonthMouseEnter={onMouseEnter}
-          {...props}
-        />
-        : <MonthPicker
-          id={`${props.interval}-picker`}
-          initialVisibleYear={props.date}
-          onMonthClick={onDateClick}
-          modifiers={{ selected: (month) => {
-            return props.date.startOf('year').isSame(month.clone().startOf('year'))
-          }}}
-          onMonthMouseEnter={onMouseEnter}
-          {...props}
-        />
-  )
+    }[this.props.interval]
+  }
+
+  render() {    
+    return this.getComponent()
+  }
 }
 
 CustomDatePicker.propTypes = {

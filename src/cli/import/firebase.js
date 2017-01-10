@@ -23,7 +23,7 @@ const addUserLocation = (db, user, location) =>
 const addUserMeasures = (db, user, location, measures) =>
   db.ref(`measures/${stringToKey(location)}`).set([]).then(() =>
     measures.reduce((prev, measure) =>
-      db.ref(`measures/${stringToKey(location)}`).push(measure)
+      db.ref(`measures/${stringToKey(location)}/day`).push(measure)
     , Promise.resolve())
   )
 

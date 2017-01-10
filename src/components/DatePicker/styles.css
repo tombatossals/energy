@@ -1,0 +1,9 @@
+td.CalendarMonth__day--past {
+  pointer-events: none;
+  opacity: .3;
+}
+
+td.CalendarYear__month--past {
+  pointer-events: none;
+  opacity: .3;
+}

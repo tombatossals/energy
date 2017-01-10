@@ -15,11 +15,15 @@ const mkdirSync = (path) => {
 
 const config = getConfig().collect.iberdrola
 let initDate = moment().subtract(2, 'd')
-let endDate = moment().subtract(5, 'y')
+let endDate = moment().subtract(3, 'd')
 
 if (process.argv.length > 2) {
-  initDate = moment(process.argv[2], 'DD-MM-YYYY')
-  endDate = moment(process.argv[2], 'DD-MM-YYYY').subtract(1, 'day')
+  if (process.argv[2] === 'all') {
+    endDate = moment().subtract(3, 'y')
+  } else {
+    initDate = moment(process.argv[2], 'DD-MM-YYYY')
+    endDate = moment(process.argv[2], 'DD-MM-YYYY').subtract(1, 'day')
+  }
 }
 
 mkdirSync('data')

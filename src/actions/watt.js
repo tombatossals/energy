@@ -100,7 +100,10 @@ const emailToKey = email => email.replace(/[.]/g, '%20')
 
 const getWattsByDay = (date, location) =>
   new Promise((resolve, reject) =>
-    firebase.database().ref(`measures/${location}`).orderByChild('date').equalTo(date.format('YYYYMMDD')).once('value').then(measures =>
+    firebase.database()
+      .ref(`measures/${location}/day`)
+      .orderByChild('date')
+      .equalTo(date.format('YYYYMMDD')).once('value').then(measures =>
       measures.val() && Object.keys(measures.val()).length === 24
         ? resolve(Object.values(measures.val()).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time)))
         : resolve(hoursOfDay(date).map(time => ({ time, value: 0 })))
@@ -109,7 +112,7 @@ const getWattsByDay = (date, location) =>
 const getWattsByWeek = (date, location) =>
   new Promise((resolve, reject) =>
     firebase.database()
-      .ref(`measures/${location}`)
+      .ref(`measures/${location}/day`)
       .orderByChild('date')
       .startAt(date.startOf('week').format('YYYYMMDD'))
       .endAt(date.endOf('week').format('YYYYMMDD')).once('value').then(measures =>
@@ -121,7 +124,7 @@ const getWattsByWeek = (date, location) =>
 const getWattsByMonth = (date, location) =>
   new Promise((resolve, reject) =>
     firebase.database()
-      .ref(`measures/${location}`)
+      .ref(`measures/${location}/day`)
       .orderByChild('date')
       .startAt(date.startOf('month').format('YYYYMMDD'))
       .endAt(date.endOf('month').format('YYYYMMDD')).once('value').then(measures =>
@@ -133,7 +136,7 @@ const getWattsByMonth = (date, location) =>
 const getWattsByYear = (date, location) =>
   new Promise((resolve, reject) =>
     firebase.database()
-      .ref(`measures/${location}`)
+      .ref(`measures/${location}/day`)
       .orderByChild('date')
       .startAt(date.startOf('year').format('YYYYMMDD'))
       .endAt(date.endOf('year').format('YYYYMMDD')).once('value').then(measures =>
