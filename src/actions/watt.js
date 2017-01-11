@@ -96,61 +96,36 @@ const groupByYearMonth = measures => {
   return Object.values(result).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
 }
 
+const groupByHourDay = measures =>
+  Object.values(measures).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
+
 const emailToKey = email => email.replace(/[.]/g, '%20')
 
-const getWattsByDay = (date, location) =>
-  new Promise((resolve, reject) =>
-    firebase.database()
-      .ref(`measures/${location}/day`)
-      .orderByChild('date')
-      .equalTo(date.format('YYYYMMDD')).once('value').then(measures =>
-      measures.val() && Object.keys(measures.val()).length === 24
-        ? resolve(Object.values(measures.val()).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time)))
-        : resolve(hoursOfDay(date).map(time => ({ time, value: 0 })))
-    ))
-
-const getWattsByWeek = (date, location) =>
-  new Promise((resolve, reject) =>
-    firebase.database()
-      .ref(`measures/${location}/day`)
-      .orderByChild('date')
-      .startAt(date.startOf('week').format('YYYYMMDD'))
-      .endAt(date.endOf('week').format('YYYYMMDD')).once('value').then(measures =>
-        measures.val()
-        ? resolve(groupByWeekDay(measures.val()))
-        : resolve(daysOfWeek(date).map(time => ({ time, value: 0 })))
-  ))
-
-const getWattsByMonth = (date, location) =>
-  new Promise((resolve, reject) =>
-    firebase.database()
-      .ref(`measures/${location}/day`)
-      .orderByChild('date')
-      .startAt(date.startOf('month').format('YYYYMMDD'))
-      .endAt(date.endOf('month').format('YYYYMMDD')).once('value').then(measures =>
-        measures.val()
-        ? resolve(groupByMonthWeek(measures.val()))
-        : resolve(weeksOfMonth(date).map(time => ({ time, value: 0 })))
-  ))
-
-const getWattsByYear = (date, location) =>
-  new Promise((resolve, reject) =>
-    firebase.database()
-      .ref(`measures/${location}/day`)
-      .orderByChild('date')
-      .startAt(date.startOf('year').format('YYYYMMDD'))
-      .endAt(date.endOf('year').format('YYYYMMDD')).once('value').then(measures =>
-        measures.val()
-        ? resolve(groupByYearMonth(measures.val()))
-        : resolve(monthsOfYear(date).map(time => ({ time, value: 0 })))
-  ))
-
-const getWatts = {
-  [Intervals.DAY]: getWattsByDay,
-  [Intervals.WEEK]: getWattsByWeek,
-  [Intervals.MONTH]: getWattsByMonth,
-  [Intervals.YEAR]: getWattsByYear
+const groupMeasures = {
+  [Intervals.DAY]: groupByHourDay,
+  [Intervals.WEEK]: groupByWeekDay,
+  [Intervals.MONTH]: groupByMonthWeek,
+  [Intervals.YEAR]: groupByYearMonth
 }
+
+const zeroMeasures = {
+  [Intervals.DAY]: hoursOfDay,
+  [Intervals.WEEK]: daysOfWeek,
+  [Intervals.MONTH]: weeksOfMonth,
+  [Intervals.YEAR]: monthsOfYear
+}
+
+const getWatts = (interval, date, location) =>
+  new Promise((resolve, reject) =>
+    firebase.database()
+      .ref(`measures/${location}/day`)
+      .orderByChild('date')
+      .startAt(date.startOf(interval).format('YYYYMMDD'))
+      .endAt(date.endOf(interval).format('YYYYMMDD')).once('value').then(measures =>
+        measures.val()
+        ? resolve(groupMeasures[interval](measures.val()))
+        : resolve(zeroMeasures[interval](date).map(time => ({ time, value: 0 })))
+  ))
 
 export const getWattsByInterval = (date, interval) =>
   dispatch => {
@@ -166,7 +141,7 @@ export const getWattsByInterval = (date, interval) =>
       const location = Object.keys(locations.val().locations)[0]
 
       const getWattsAction = createAction(DataActions.DATA_FETCH)
-      getWatts[interval](date, location).then(data =>
+      getWatts(interval, date, location).then(data =>
         dispatch(getWattsAction({
           status: AsyncStatus.SUCCESS,
           data,
