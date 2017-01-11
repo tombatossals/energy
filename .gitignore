@@ -15,7 +15,8 @@ build
 npm-debug.log
 
 data/
-config.json
+config/config.server.json
+config/config.client.json
 firebase.json
 .firebaserc
 database.rules.json
