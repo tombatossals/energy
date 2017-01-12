@@ -11,9 +11,9 @@ admin.initializeApp({
 
 const db = admin.database()
 
-const removeMeasuresByDateKey = (ref, dateKey) =>
+const removeMeasuresByDateKey = (ref, date) =>
   ref.orderByChild('date')
-    .equalTo(dateKey)
+    .equalTo(date.format('YYYYMMDD'))
     .once('value', snapshot => {
       if (snapshot.val()) {
         return Object.keys(snapshot.val()).reduce((prev, key) =>
@@ -23,26 +23,31 @@ const removeMeasuresByDateKey = (ref, dateKey) =>
     }
   )
 
-const addMeasuresByInterval = (db, uid, location, date, interval, dateKey) =>
-  removeMeasuresByDateKey(db.ref(`measures/${location}/${interval}`), dateKey).then(() =>
+const addMeasuresByInterval = (location, date, interval) =>
+  removeMeasuresByDateKey(db.ref(`measures/${location}/${interval}`), date).then(() =>
     getWatts(interval, date, location, db).then(data =>
       data.map(measure => db.ref(`measures/${location}/${interval}`).push(measure))))
 
 
 let year = moment()
-if (process.argv.length > 2) {
-  year = moment(process.argv[2])
-}
+const { contract } = getServerConfig().collect.iberdrola
 
-const { username, contract } = getServerConfig().collect.iberdrola
-
-const getUserUID = email =>
-  admin.auth().getUserByEmail(username)
-
-getUserUID(username).then(user =>
+if (process.argv.length === 3) {
+  if (moment.isMoment(process.argv[2]), 'YYYY') {
+    year = moment(process.argv[2], 'YYYY').startOf('year')
+  }
+  getWatts('week', year, contract, db).then(data =>
+    console.log(data)
+  ).then(process.exit)
+} else if (process.argv.length === 2) {
   Promise.all([
-    addMeasuresByInterval(db, user.uid, contract, year, 'year', year.format('YYYYMM')),
-    addMeasuresByInterval(db, user.uid, contract, year, 'month', year.format('YYYYMMDD')),
-    addMeasuresByInterval(db, user.uid, contract, year, 'week', year.format('YYYYMMDD'))
-  ])).then(process.exit)
-
+    addMeasuresByInterval(contract, year, 'year'),
+    addMeasuresByInterval(contract, year, 'month'),
+    addMeasuresByInterval(contract, year, 'week')
+  ]).then(process.exit)
+} else {
+   db.ref(`measures/${contract}/year`).set([]).then(() =>
+    db.ref(`measures/${contract}/month`).set([])).then(() =>
+      db.ref(`measures/${contract}/week`).set([])).then(() =>
+        process.exit())
+}

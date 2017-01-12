@@ -80,7 +80,7 @@ const groupByMonthWeek = measures => {
     result.hasOwnProperty(moment(measure.time).startOf('week').format('MMDD'))
       ? result[moment(measure.time).startOf('week').format('MMDD')].value += measure.value
       : result[moment(measure.time).startOf('week').format('MMDD')] = {
-        date: moment(measure.time).format('YYYYMMDD'),
+        date: moment(measure.time).startOf('week').format('YYYYMMDD'),
         time: moment(measure.time).startOf('week').toISOString(),
         value: measure.value
       }
@@ -94,7 +94,7 @@ const groupByYearMonth = measures => {
     result.hasOwnProperty(moment(measure.time).startOf('month').format('MM'))
       ? result[moment(measure.time).startOf('month').format('MM')].value += measure.value
       : result[moment(measure.time).startOf('month').format('MM')] = {
-        date: moment(measure.time).format('YYYYMM'),
+        date: moment(measure.time).startOf('month').format('YYYYMMDD'),
         time: moment(measure.time).startOf('month').toISOString(),
         value: measure.value
       }
@@ -121,9 +121,9 @@ const zeroMeasures = {
 
 export const getWatts = (interval, date, location, db) =>
   new Promise((resolve, reject) =>
-    db.ref(`measures/${location}/day`)
+    db.ref(`measures/${location}/${interval}`)
       .orderByChild('date')
-      .startAt(date.startOf(interval).format('YYYYMMDD'))
+      .startAt(date.clone().startOf(interval).format('YYYYMMDD'))
       .endAt(date.endOf(interval).format('YYYYMMDD')).once('value').then(measures =>
         measures.val()
         ? resolve(groupMeasures[interval](measures.val()))
@@ -139,6 +139,12 @@ const db = firebase.database()
 export const getWattsByInterval = (date, interval) =>
   new Promise((resolve, reject) =>
     db.ref(`users/${getUID()}`).once('value', locations =>
-      resolve(getWatts(interval, date, getFirstLocation(locations), db))
+      db.ref(`measures/${getFirstLocation(locations)}/${interval}`)
+        .orderByChild('date')
+        .startAt(date.clone().startOf(interval).format('YYYYMMDD'))
+        .endAt(date.clone().endOf(interval).format('YYYYMMDD')).once('value')
+        .then(measures =>
+          console.log(measures.val()) && resolve(Object.values(measures.val()).slice().sort((t1, t2) => 
+            moment(t1.time) - moment(t2.time))))
     )
   )
