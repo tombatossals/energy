@@ -2,6 +2,7 @@ import admin from 'firebase-admin'
 import moment from 'moment'
 import { getServerConfig } from '../../lib/config'
 import { getWatts } from '../../lib/firebase'
+import { Intervals } from '../../lib/constants'
 const firebaseConfig = getServerConfig().import.firebase
 
 admin.initializeApp({
@@ -14,40 +15,61 @@ const db = admin.database()
 const removeMeasuresByDateKey = (ref, date) =>
   ref.orderByChild('date')
     .equalTo(date.format('YYYYMMDD'))
-    .once('value', snapshot => {
-      if (snapshot.val()) {
-        return Object.keys(snapshot.val()).reduce((prev, key) =>
-          prev.then(ref.child(key).remove()), Promise.resolve())
-      }
-      return Promise.resolve()
-    }
+    .once('value', snapshot =>
+      snapshot.val()
+        ? Object.keys(snapshot.val()).reduce((prev, key) =>
+            prev.then(ref.child(key).remove()), Promise.resolve())
+        : Promise.resolve()
   )
 
 const addMeasuresByInterval = (location, date, interval) =>
-  removeMeasuresByDateKey(db.ref(`measures/${location}/${interval}`), date).then(() =>
-    getWatts(interval, date, location, db).then(data =>
-      data.map(measure => db.ref(`measures/${location}/${interval}`).push(measure))))
+  new Promise((resolve, reject) =>
+    removeMeasuresByDateKey(db.ref(`measures/${location}/${interval}`), date).then(() =>
+      getWatts(interval, date, db.ref(`measures/${location}/day`)).then(measures =>
+        resolve(measures.map(measure =>
+          measure.value > 0 && db.ref(`measures/${location}/${interval}`).push(measure).key)
+        )
+      )
+    )
+  )
 
-
-let year = moment()
 const { contract } = getServerConfig().collect.iberdrola
 
-if (process.argv.length === 3) {
-  if (moment.isMoment(process.argv[2]), 'YYYY') {
-    year = moment(process.argv[2], 'YYYY').startOf('year')
-  }
-  getWatts('week', year, contract, db).then(data =>
-    console.log(data)
-  ).then(process.exit)
-} else if (process.argv.length === 2) {
-  Promise.all([
-    addMeasuresByInterval(contract, year, 'year'),
-    addMeasuresByInterval(contract, year, 'month'),
-    addMeasuresByInterval(contract, year, 'week')
-  ]).then(process.exit)
-} else {
-   db.ref(`measures/${contract}/year`).set([]).then(() =>
+if (process.argv.length < 3) process.exit(-1)
+
+if (process.argv.length === 3 && process.argv[2] === 'clean') {
+  db.ref(`measures/${contract}/year`).set([]).then(() =>
     db.ref(`measures/${contract}/month`).set([])).then(() =>
-      db.ref(`measures/${contract}/week`).set([])).then(() =>
-        process.exit())
+      db.ref(`measures/${contract}/week`).set([]))
+        .then(() => setTimeout(() => process.exit(), 5000))
+} else {
+  const interval = process.argv[2]
+  const date = moment(process.argv[3], 'YYYY').startOf('year')
+  const current = date.clone()
+  const promises = []
+
+  switch (interval) {
+    case Intervals.WEEK:
+      while (current.year() === date.year()) {
+        promises.push(addMeasuresByInterval(contract, current.clone(), 'week'))
+        current.add(1, 'week')
+      }
+      Promise.all(promises)
+        .then(() => setTimeout(() => process.exit(), 5000))
+      break
+    case Intervals.MONTH:
+      while (current.year() === date.year()) {
+        promises.push(addMeasuresByInterval(contract, current.clone(), 'month'))
+        current.add(1, 'month')
+      }
+      Promise.all(promises)
+        .then(() => setTimeout(() => process.exit(), 5000))
+      break
+    case Intervals.YEAR:
+      addMeasuresByInterval(contract, current.clone(), 'year')
+        .then(() => setTimeout(() => process.exit(), 5000))
+      break
+    default:
+      process.exit(-1)
+  }
 }

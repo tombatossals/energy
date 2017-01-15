@@ -8,56 +8,31 @@ const config = getClientConfig().firebase
 firebase.initializeApp(config)
 export const getFirebase = () => firebase
 
-const hoursOfDay = (date) => {
-  const current = date.clone().startOf('day')
-  const end = date.clone().endOf('day')
-  const hours = [ current.toISOString() ]
-
-  while (current.isBefore(end)) {
-    current.add(1, 'hour')
-    hours.push(current.toISOString())
-  }
-
-  return hours
+const previousInterval = {
+  year: 'month',
+  month: 'week',
+  week: 'day',
+  day: 'hour'
 }
 
-const daysOfWeek = (date) => {
-  const current = date.clone().startOf('week')
-  const end = date.clone().endOf('week')
-  const days = [ current.toISOString() ]
+const sortMeasures = measures =>
+  Object.values(measures).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
+
+const initialInterval = (date, interval) => {
+  const current = date.clone().startOf(interval)
+  const end = date.clone().endOf(interval)
+  const measures = {}
 
   while (current.isBefore(end)) {
-    current.add(1, 'day')
-    days.push(current.toISOString())
+    current.add(1, previousInterval[interval])
+    measures[current.toISOString()] = {
+      date: current.format('YYYYMMDD'),
+      time: current.toISOString(),
+      value: 0
+    }
   }
 
-  return days
-}
-
-const weeksOfMonth = (date) => {
-  const current = date.clone().startOf('month')
-  const end = date.clone().endOf('month')
-  const weeks = [ current.toISOString() ]
-
-  while (current.isBefore(end)) {
-    current.add(1, 'week')
-    weeks.push(current.toISOString())
-  }
-
-  return weeks
-}
-
-const monthsOfYear = (date) => {
-  const current = date.clone().startOf('year')
-  const end = date.clone().endOf('year')
-  const months = [ current.toISOString() ]
-
-  while (current.isBefore(end)) {
-    current.add(1, 'month')
-    months.push(current.toISOString())
-  }
-
-  return months
+  return measures
 }
 
 const groupByWeekDay = measures => {
@@ -112,22 +87,14 @@ const groupMeasures = {
   [Intervals.YEAR]: groupByYearMonth
 }
 
-const zeroMeasures = {
-  [Intervals.DAY]: hoursOfDay,
-  [Intervals.WEEK]: daysOfWeek,
-  [Intervals.MONTH]: weeksOfMonth,
-  [Intervals.YEAR]: monthsOfYear
-}
-
-export const getWatts = (interval, date, location, db) =>
+export const getWatts = (interval, date, ref) =>
   new Promise((resolve, reject) =>
-    db.ref(`measures/${location}/${interval}`)
-      .orderByChild('date')
+      ref.orderByChild('date')
       .startAt(date.clone().startOf(interval).format('YYYYMMDD'))
-      .endAt(date.endOf(interval).format('YYYYMMDD')).once('value').then(measures =>
+      .endAt(date.clone().endOf(interval).format('YYYYMMDD')).once('value').then(measures =>
         measures.val()
         ? resolve(groupMeasures[interval](measures.val()))
-        : resolve(zeroMeasures[interval](date).map(time => ({ time, value: 0 })))
+        : resolve(sortMeasures(initialInterval(date, interval)))
   ))
 
 const getFirstLocation = locations => Object.keys(locations.val().locations)[0]
@@ -142,9 +109,11 @@ export const getWattsByInterval = (date, interval) =>
       db.ref(`measures/${getFirstLocation(locations)}/${interval}`)
         .orderByChild('date')
         .startAt(date.clone().startOf(interval).format('YYYYMMDD'))
-        .endAt(date.clone().endOf(interval).format('YYYYMMDD')).once('value')
+        .endAt(date.clone().endOf(interval).format('YYYYMMDD'))
+        .once('value')
         .then(measures =>
-          console.log(measures.val()) && resolve(Object.values(measures.val()).slice().sort((t1, t2) => 
-            moment(t1.time) - moment(t2.time))))
+          measures.val()
+          ? resolve(sortMeasures(measures.val()))
+          : resolve(sortMeasures(initialInterval(date, interval))))
     )
   )
