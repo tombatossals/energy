@@ -7,8 +7,8 @@ import './styles.css'
 
 const xformatter = {
   [Intervals.DAY]: time => `${moment(time).format('HH:mm')}h`,
-  [Intervals.WEEK]: time => moment(time).format('DD') === '01' ? moment(time).format('DD MMM') : moment(time).format('DD'),
-  [Intervals.MONTH]: time => moment(time).format('DD-MM-YYYY'),
+  [Intervals.WEEK]: time => moment(time).format('DD MMM'),
+  [Intervals.MONTH]: time => moment(time).format('DD-MMM-YYYY'),
   [Intervals.YEAR]: time => moment(time).format('MMM')
 }
 
@@ -38,7 +38,7 @@ export default class Chart extends React.Component {
             <YAxis
               type='number'
               domain={['0', 'dataMax + 200']}
-              tickFormatter={val => `${(val / 1000).toFixed(2)} Wh`}
+              tickFormatter={val => `${(val / 1000).toFixed(2)} Kw/h`}
             />
             <CartesianGrid strokeDasharray='3 3' />
             <Tooltip />
