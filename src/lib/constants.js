@@ -19,5 +19,6 @@ export const AuthActions = {
 }
 
 export const DataActions = {
-  DATA_FETCH: 'DATA_FETCH'
+  DATA_FETCH: 'DATA_FETCH',
+  LOCATION_DATA_FETCH: 'LOCATION_DATA_FETCH'
 }

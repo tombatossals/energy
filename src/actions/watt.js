@@ -2,7 +2,7 @@ import { AsyncStatus, DataActions } from '../lib/constants'
 import { createAction } from 'redux-actions'
 import * as fb from '../lib/firebase'
 
-export const getWattsByInterval = (date, interval) =>
+export const getWattsByInterval = (location, date, interval) =>
   dispatch => {
     const getWattsAction = createAction(DataActions.DATA_FETCH)
     dispatch(getWattsAction({
@@ -11,7 +11,7 @@ export const getWattsByInterval = (date, interval) =>
       error: undefined
     }))
 
-    fb.getWattsByInterval(date, interval).then(data =>
+    fb.getWattsByInterval(location, date, interval).then(data =>
       dispatch(getWattsAction({
         status: AsyncStatus.SUCCESS,
         data,

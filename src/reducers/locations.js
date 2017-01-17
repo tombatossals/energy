@@ -21,5 +21,5 @@ const fetchData = (state, action) => {
 }
 
 export default handleActions({
-  [DataActions.DATA_FETCH]: fetchData
+  [DataActions.LOCATION_DATA_FETCH]: fetchData
 }, initialState)

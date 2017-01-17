@@ -4,7 +4,7 @@ import * as fb from '../lib/firebase'
 
 export const getLocations = (userId) =>
   dispatch => {
-    const getLocationsAction = createAction(DataActions.DATA_FETCH)
+    const getLocationsAction = createAction(DataActions.LOCATION_DATA_FETCH)
     dispatch(getLocationsAction({
       status: AsyncStatus.REQUEST,
       data: [],

@@ -1,6 +1,6 @@
 import React from 'react'
 import moment from 'moment'
-import { Link } from 'react-router'
+import { Link, Redirect } from 'react-router'
 import { connect } from 'react-redux'
 import { getWattsByInterval, getLocations } from '../../actions'
 import Chart from '../../components/Chart'
@@ -26,7 +26,7 @@ class Dashboard extends React.Component {
   componentDidUpdate (prevProps, prevState) {
     if (this.props.params.date !== prevProps.params.date ||
         this.props.params.interval !== prevProps.params.interval) {
-      this.props.getWattsByInterval(moment(this.props.params.date), this.props.params.interval)
+      this.props.getWattsByInterval(this.props.params.location, moment(this.props.params.date), this.props.params.interval)
     }
   }
 
@@ -39,17 +39,21 @@ class Dashboard extends React.Component {
   }
 
   render () {
-    console.log(this.props.locations.data)
+    if (!this.props.params.location && this.props.locations.data.length === 1) {
+      const { interval, date } = this.props.params
+      return <Redirect to={`/dashboard/${this.props.locations.data[0]}/interval/${interval}/date/${date}`} />
+    }
+
     return (
       <div className='Dashboard'>
         <div className='Bar'>
           <div className='select'>
             <select>
               {this.props.locations.data.map(location =>
-                <option key={location}>{ location.name }</option>
+                <option key={location}>{ location }</option>
               )}
             </select>
-        		<div className="select__arrow"></div>            
+            <div className='select__arrow' />
           </div>
           { this.props.params.location &&
             <div>
@@ -64,7 +68,7 @@ class Dashboard extends React.Component {
               <div className='Menu'>
                 <div className='MenuItem'>
                   {Object.values(Intervals).map(interval =>
-                    <Link className='NoUnderline' key={interval} to={`/dashboard/interval/${interval}/date/${this.props.params.date}`}>
+                    <Link className='NoUnderline' key={interval} to={`/dashboard/${this.props.params.location}/interval/${interval}/date/${this.props.params.date}`}>
                       <Button active={this.props.params.interval === interval}>
                         {this.upperFirst(interval)}
                       </Button>
@@ -76,7 +80,7 @@ class Dashboard extends React.Component {
             </div>
           }
         </div>
-        { this.props.params.location &&      
+        { this.props.params.location &&
           <div className='ChartContainer'>
             <Chart watt={this.props.watt} interval={this.props.params.interval} />
           </div>
@@ -88,6 +92,7 @@ class Dashboard extends React.Component {
 
 Dashboard.propTypes = {
   getWattsByInterval: React.PropTypes.func.isRequired,
+  getLocations: React.PropTypes.func.isRequired,
   watt: React.PropTypes.object,
   locations: React.PropTypes.object,
   pathname: React.PropTypes.string.isRequired,

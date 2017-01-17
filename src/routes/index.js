@@ -51,6 +51,7 @@ class Routes extends Component {
               <Redirect to={`/dashboard/interval/day/date/${moment().subtract(2, 'day').format('YYYYMMDD')}`} />}
             />
             <MatchWhenAuthorized auth={this.props.auth} router={router} pattern='/dashboard/interval/:interval/date/:date' component={Dashboard} />
+            <MatchWhenAuthorized auth={this.props.auth} router={router} pattern='/dashboard/:location/interval/:interval/date/:date' component={Dashboard} />
             <Miss render={() => <h1>No Match</h1>} />
           </div>
         )}

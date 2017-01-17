@@ -97,27 +97,22 @@ export const getWatts = (interval, date, ref) =>
         : resolve(sortMeasures(initialInterval(date, interval)))
   ))
 
-const getFirstLocation = locations => Object.keys(locations.val().locations)[0]
-
 const getUID = () => firebase.auth().currentUser.uid
 
 const db = firebase.database()
 
-export const getWattsByInterval = (date, interval) =>
+export const getWattsByInterval = (location, date, interval) =>
   new Promise((resolve, reject) =>
-    db.ref(`users/${getUID()}`).once('value', locations =>
-      db.ref(`measures/${getFirstLocation(locations)}/${interval}`)
-        .orderByChild('date')
-        .startAt(date.clone().startOf(interval).format('YYYYMMDD'))
-        .endAt(date.clone().endOf(interval).format('YYYYMMDD'))
-        .once('value')
-        .then(measures =>
-          measures.val()
-          ? resolve(sortMeasures(measures.val()))
-          : resolve(sortMeasures(initialInterval(date, interval))))
-    )
+    db.ref(`measures/${location}/${interval}`)
+      .orderByChild('date')
+      .startAt(date.clone().startOf(interval).format('YYYYMMDD'))
+      .endAt(date.clone().endOf(interval).format('YYYYMMDD'))
+      .once('value')
+      .then(measures =>
+        measures.val()
+        ? resolve(sortMeasures(measures.val()))
+        : resolve(sortMeasures(initialInterval(date, interval))))
   )
-
 
 export const getLocations = () =>
   new Promise((resolve, reject) =>

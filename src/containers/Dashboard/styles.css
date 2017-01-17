@@ -47,15 +47,16 @@
 
 .Dashboard .select {
 	position: relative;
-	display: inline-block;	
+	display: inline-block;
 	margin-bottom: 1rem;
+  padding: 5px;
   border: 1px solid  var(--oc-gray-4);
 }
 
 .Dashboard .select select {
 	width: 100%;
-	display: inline-block;	
-	padding: 10px 15px;
+	display: inline-block;
+	padding: 10px 25px 10px 15px;
 	cursor: pointer;
 	color: var(--oc-gray-8);
 	border: 0;
@@ -82,7 +83,7 @@
 
 .Dashboard .select__arrow {
 	position: absolute;
-	top: 16px;
+	top: 20px;
 	right: 15px;
 	width: 0;
 	height: 0;
