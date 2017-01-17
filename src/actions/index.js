@@ -7,3 +7,7 @@ export {
 export {
   getWattsByInterval
 } from './watt'
+
+export {
+  getLocations
+} from './locations'

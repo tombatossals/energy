@@ -117,3 +117,13 @@ export const getWattsByInterval = (date, interval) =>
           : resolve(sortMeasures(initialInterval(date, interval))))
     )
   )
+
+
+export const getLocations = () =>
+  new Promise((resolve, reject) =>
+    db.ref(`users/${getUID()}`).once('value', locations =>
+      locations.val()
+        ? resolve(Object.keys(locations.val().locations))
+        : []
+    )
+  )

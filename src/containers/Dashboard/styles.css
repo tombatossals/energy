@@ -44,3 +44,58 @@
 .Dashboard .ChartContainer .Chart {
   flex: 1;
 }
+
+.Dashboard .select {
+	position: relative;
+	display: inline-block;	
+	margin-bottom: 1rem;
+  border: 1px solid  var(--oc-gray-4);
+}
+
+.Dashboard .select select {
+	width: 100%;
+	display: inline-block;	
+	padding: 10px 15px;
+	cursor: pointer;
+	color: var(--oc-gray-8);
+	border: 0;
+	border-radius: 0;
+	outline: 0;
+	background: var(--oc-gray-3);
+	appearance: none;
+}
+
+.Dashboard .select select::-ms-expand {
+	display: none;
+}
+
+.Dashboard .select select:hover,
+.Dashboard .select select:focus {
+	color: var(--oc-gray-10);
+	background: var(--oc-gray-4);
+}
+
+.Dashboard .select select:disabled {
+	pointer-events: none;
+	opacity: .5;
+}
+
+.Dashboard .select__arrow {
+	position: absolute;
+	top: 16px;
+	right: 15px;
+	width: 0;
+	height: 0;
+	pointer-events: none;
+	border-width: 8px 5px 0 5px;
+	border-style: solid;
+	border-color: #7b7b7b transparent transparent transparent;
+}
+.Dashboard .select select:hover ~ .select__arrow,
+.Dashboard .select select:focus ~ .select__arrow {
+	border-top-color: #000;
+}
+
+.Dashboard .select select:disabled ~ .select__arrow {
+	border-top-color: #ccc;
+}
