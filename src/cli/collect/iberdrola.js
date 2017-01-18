@@ -4,6 +4,11 @@ import moment from 'moment'
 import phantom from 'phantom'
 import XLSX from 'xlsx'
 import { getServerConfig } from '../../lib/config'
+import {
+  addUserLocation,
+  addMeasures,
+  removeMeasuresByDate
+} from '../../lib/firebase-admin'
 
 const mkdirSync = (path) => {
   try {
@@ -17,13 +22,16 @@ const config = getServerConfig().collect.iberdrola
 let initDate = moment().subtract(2, 'd')
 let endDate = moment().subtract(3, 'd')
 
-if (process.argv.length > 2) {
+if (process.argv.length === 3) {
   if (process.argv[2] === 'all') {
-    endDate = moment().subtract(3, 'y')
+    endDate = moment('17-07-2014', 'DD-MM-YYYY')
   } else {
     initDate = moment(process.argv[2], 'DD-MM-YYYY')
     endDate = moment(process.argv[2], 'DD-MM-YYYY').subtract(1, 'day')
   }
+} else if (process.argv.length === 4) {
+  initDate = moment(process.argv[2], 'DD-MM-YYYY')
+  endDate = moment(process.argv[3], 'DD-MM-YYYY').subtract(1, 'day')
 }
 
 mkdirSync('data')
@@ -91,6 +99,9 @@ const waitFor = async (data) => {
   // Click contract
   const contract = config.contract
   await page.evaluate((contract) => window.$('td:contains("' + contract + '")').click(), contract)
+
+
+  addUserLocation(config.userId, contract)
 
   // Wait for contract loaded
   await waitFor({ page, check: () => window.$('ul#InfoContratoTabs').is(':visible') })
@@ -162,9 +173,11 @@ const waitFor = async (data) => {
       }
     })
 
-    fs.writeFileSync('data/' + initDate.format('DD-MM-YYYY') + '.json', JSON.stringify(result, null, 4))
+    removeMeasuresByDate(contract, initDate.clone()).then(() => addMeasures(contract, result))
+    // fs.writeFileSync('data/' + initDate.format('DD-MM-YYYY') + '.json', JSON.stringify(result, null, 4))
     initDate.subtract(1, 'd')
   }
 
   await instance.exit()
+  setTimeout(() => process.exit(), 5000)
 }())

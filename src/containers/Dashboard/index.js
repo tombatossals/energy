@@ -13,6 +13,7 @@ class Dashboard extends React.Component {
   constructor (props) {
     super(props)
     this.dateSelected = this.dateSelected.bind(this)
+    this.locationSelected = this.locationSelected.bind(this)
   }
 
   componentDidMount () {
@@ -25,20 +26,28 @@ class Dashboard extends React.Component {
 
   componentDidUpdate (prevProps, prevState) {
     if (this.props.params.date !== prevProps.params.date ||
-        this.props.params.interval !== prevProps.params.interval) {
+        this.props.params.interval !== prevProps.params.interval ||
+        this.props.params.location !== prevProps.params.location) {
       this.props.getWattsByInterval(this.props.params.location, moment(this.props.params.date), this.props.params.interval)
     }
   }
 
   dateSelected (date) {
-    this.context.router.transitionTo(`/dashboard/interval/${this.props.params.interval}/date/${date.format('YYYYMMDD')}`)
+    this.context.router.transitionTo(`/dashboard/${this.props.params.location}/interval/${this.props.params.interval}/date/${date.format('YYYYMMDD')}`)
   }
 
   upperFirst (str) {
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
+  locationSelected(ev) {
+    const { interval, date } = this.props.params    
+    this.context.router.transitionTo(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
+    console.log(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
+  }
+
   render () {
+
     if (!this.props.params.location && this.props.locations.data.length === 1) {
       const { interval, date } = this.props.params
       return <Redirect to={`/dashboard/${this.props.locations.data[0]}/interval/${interval}/date/${date}`} />
@@ -48,7 +57,8 @@ class Dashboard extends React.Component {
       <div className='Dashboard'>
         <div className='Bar'>
           <div className='select'>
-            <select>
+            <select onChange={this.locationSelected} value={this.props.params.location}>
+              <option>Select Location:</option>
               {this.props.locations.data.map(location =>
                 <option key={location}>{ location }</option>
               )}
