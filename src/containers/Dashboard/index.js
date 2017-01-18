@@ -40,14 +40,13 @@ class Dashboard extends React.Component {
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
-  locationSelected(ev) {
-    const { interval, date } = this.props.params    
+  locationSelected (ev) {
+    const { interval, date } = this.props.params
     this.context.router.transitionTo(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
     console.log(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
   }
 
   render () {
-
     if (!this.props.params.location && this.props.locations.data.length === 1) {
       const { interval, date } = this.props.params
       return <Redirect to={`/dashboard/${this.props.locations.data[0]}/interval/${interval}/date/${date}`} />
@@ -60,7 +59,7 @@ class Dashboard extends React.Component {
             <select onChange={this.locationSelected} value={this.props.params.location}>
               <option>Select Location:</option>
               {this.props.locations.data.map(location =>
-                <option key={location}>{ location }</option>
+                <option key={location.id} value={location.id}>{ location.name }</option>
               )}
             </select>
             <div className='select__arrow' />

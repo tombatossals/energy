@@ -118,7 +118,7 @@ export const getLocations = () =>
   new Promise((resolve, reject) =>
     db.ref(`users/${getUID()}`).once('value', locations =>
       locations.val()
-        ? resolve(Object.keys(locations.val().locations))
+        ? resolve(Object.keys(locations.val().locations).map(loc => ({ id: loc, name: locations.val().locations[loc] })))
         : []
     )
   )
