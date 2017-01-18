@@ -50,6 +50,7 @@
 	display: inline-block;
 	margin-bottom: 1rem;
   padding: 5px;
+  background: var(--oc-gray-0);
   border: 1px solid  var(--oc-gray-4);
 }
 
@@ -62,7 +63,7 @@
 	border: 0;
 	border-radius: 0;
 	outline: 0;
-	background: var(--oc-gray-3);
+	background: var(--oc-gray-1);
 	appearance: none;
 }
 
@@ -73,7 +74,7 @@
 .Dashboard .select select:hover,
 .Dashboard .select select:focus {
 	color: var(--oc-gray-10);
-	background: var(--oc-gray-4);
+	background: var(--oc-gray-2);
 }
 
 .Dashboard .select select:disabled {
@@ -90,7 +91,7 @@
 	pointer-events: none;
 	border-width: 8px 5px 0 5px;
 	border-style: solid;
-	border-color: #7b7b7b transparent transparent transparent;
+	border-color: var(--oc-gray-6) transparent transparent transparent;
 }
 .Dashboard .select select:hover ~ .select__arrow,
 .Dashboard .select select:focus ~ .select__arrow {
