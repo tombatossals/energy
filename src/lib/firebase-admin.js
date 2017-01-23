@@ -13,8 +13,8 @@ export const getFirebaseAdmin = () => firebase
 
 const db = firebase.database()
 
-export const addUserLocation = (user, location) =>
-  db.ref(`users/${user}/locations/${location}`).set(true)
+export const addUserLocation = (user, location, description) =>
+  db.ref(`users/${user}/locations/${location}`).set(description)
 
 export const addMeasures = (location, measures) =>
   Promise.all(measures.map(measure => getRefLocation(location, 'day').push(measure)))

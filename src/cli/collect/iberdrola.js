@@ -6,7 +6,6 @@ import phantom from 'phantom'
 import XLSX from 'xlsx'
 import { getServerConfig } from '../../lib/config'
 import {
-  addUserLocation,
   addMeasures,
   removeMeasuresByDate
 } from '../../lib/firebase-admin'
@@ -32,8 +31,6 @@ const initDate = cmdDates && cmdDates.length > 0
 const endDate = cmdDates && cmdDates.length > 1
       ? moment(cmdDates[1], 'DD-MM-YYYY').subtract(1, 'day')
       : moment().subtract(3, 'd')
-
-addUserLocation(config.userId, location)
 
 mkdirSync('data')
 const baseUrl = 'https://www.iberdroladistribucionelectrica.com/consumidores/'
@@ -67,7 +64,15 @@ const waitFor = async (data) => {
   })
 
   page.setting('userAgent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36')
-
+  page.addCookie({
+    name: 'leyAnticookies',
+    value: '1',
+    domain: 'www.iberdroladistribucionelectrica.com',
+    path: '/consumidores',
+    httponly: false,
+    secure: false,
+    expires: '9999-12-31T23:59:59.000Z'
+  })
   page.property('onConsoleMessage', (msg, lineNum, sourceId) =>
     console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")')
   )
