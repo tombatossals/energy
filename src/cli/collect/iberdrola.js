@@ -1,6 +1,7 @@
 import fs from 'fs'
 import urljoin from 'url-join'
 import moment from 'moment'
+import cla from 'command-line-args'
 import phantom from 'phantom'
 import XLSX from 'xlsx'
 import { getServerConfig } from '../../lib/config'
@@ -18,9 +19,18 @@ const mkdirSync = (path) => {
   }
 }
 
+const options = cla([
+  { name: 'dates', type: String, multiple: true, defaultOption: true },
+  { name: 'location', alias: 'l', type: String}
+])
+
+console.log(options)
+process.exit()
+
 const config = getServerConfig().collect.iberdrola
 let initDate = moment().subtract(2, 'd')
 let endDate = moment().subtract(3, 'd')
+
 
 if (process.argv.length === 3) {
   if (process.argv[2] === 'all') {
