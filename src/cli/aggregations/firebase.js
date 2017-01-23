@@ -4,7 +4,6 @@ import {
 } from '../../lib/firebase-admin'
 import moment from 'moment'
 import { getServerConfig } from '../../lib/config'
-import { getWatts } from '../../lib/firebase'
 
 const { contract } = getServerConfig().collect.iberdrola
 

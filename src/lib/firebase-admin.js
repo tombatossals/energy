@@ -1,6 +1,5 @@
 import firebase from 'firebase-admin'
 import { getWatts } from './firebase'
-import moment from 'moment'
 import { getServerConfig } from '../lib/config'
 
 const firebaseConfig = getServerConfig().import.firebase
@@ -38,7 +37,6 @@ export const cleanCache = location =>
       db.ref(`measures/${location}/month`).set([])).then(() =>
         db.ref(`measures/${location}/week`).set([]))
 
-
 export const addMeasuresByInterval = (location, date, interval) =>
   new Promise((resolve, reject) =>
     removeMeasuresByDate(location, date, interval).then(() =>
@@ -50,4 +48,3 @@ export const addMeasuresByInterval = (location, date, interval) =>
     )
   )
 
-        

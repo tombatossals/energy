@@ -19,33 +19,23 @@ const mkdirSync = (path) => {
   }
 }
 
-const options = cla([
+const { location: cmdLocation, dates: cmdDates } = cla([
   { name: 'dates', type: String, multiple: true, defaultOption: true },
-  { name: 'location', alias: 'l', type: String}
+  { name: 'location', alias: 'l', type: String }
 ])
 
-console.log(options)
-process.exit()
-
 const config = getServerConfig().collect.iberdrola
-let initDate = moment().subtract(2, 'd')
-let endDate = moment().subtract(3, 'd')
+const location = cmdLocation || config.location
+const initDate = cmdDates && cmdDates.length > 0
+      ? moment(cmdDates[0], 'DD-MM-YYYY')
+      : moment().subtract(2, 'd')
+const endDate = cmdDates && cmdDates.length > 1
+      ? moment(cmdDates[1], 'DD-MM-YYYY').subtract(1, 'day')
+      : moment().subtract(3, 'd')
 
-
-if (process.argv.length === 3) {
-  if (process.argv[2] === 'all') {
-    endDate = moment('17-07-2014', 'DD-MM-YYYY')
-  } else {
-    initDate = moment(process.argv[2], 'DD-MM-YYYY')
-    endDate = moment(process.argv[2], 'DD-MM-YYYY').subtract(1, 'day')
-  }
-} else if (process.argv.length === 4) {
-  initDate = moment(process.argv[2], 'DD-MM-YYYY')
-  endDate = moment(process.argv[3], 'DD-MM-YYYY').subtract(1, 'day')
-}
+addUserLocation(config.userId, location)
 
 mkdirSync('data')
-
 const baseUrl = 'https://www.iberdroladistribucionelectrica.com/consumidores/'
 
 const getXLSXUrl = (dt) =>
@@ -80,7 +70,7 @@ const waitFor = async (data) => {
     console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")')
   )
 
-  console.log('Getting into Iberdrola page, wait a few seconds...')
+  console.log(`Getting into Iberdrola page location ${location}, wait a few seconds...`)
   await page.open(urljoin(baseUrl, '/inicio.html#login'))
 
   // Wait for login form loaded
@@ -100,26 +90,21 @@ const waitFor = async (data) => {
     check: () => window.$('#tablaListaContratos').is(':visible')
   })
 
-  // Wait for contract list loaded
+  // Wait for location list loaded
   await waitFor({
     page,
     check: () => window.$('#tablaListaContratos tr').is(':visible')
   })
 
-  // Click contract
-  const contract = config.contract
-  await page.evaluate((contract) => window.$('td:contains("' + contract + '")').click(), contract)
+  await page.evaluate(location => window.$('td:contains("' + location + '")').click(), location)
 
-
-  addUserLocation(config.userId, contract)
-
-  // Wait for contract loaded
+  // Wait for location loaded
   await waitFor({ page, check: () => window.$('ul#InfoContratoTabs').is(':visible') })
 
   while (initDate.isAfter(endDate)) {
     console.log(`Downloading ${initDate.format('DD-MM-YYYY')} into "data" folder...`)
     const url = getXLSXUrl(initDate)
-    const b64string = await page.evaluate((url) => {
+    const b64string = await page.evaluate(url => {
       var BASE64_ENCODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
       function encodeBase64 (str) {
@@ -170,7 +155,6 @@ const waitFor = async (data) => {
     }
 
     const data = XLSX.read(Buffer.from(b64string, 'base64')).Sheets.Consumo
-
     const result = []
     Object.keys(data).map(function (key, index) {
       if (key[0] === 'B' && data[key].v && data[key].v !== 'Mi consumo') {
@@ -183,7 +167,7 @@ const waitFor = async (data) => {
       }
     })
 
-    removeMeasuresByDate(contract, initDate.clone()).then(() => addMeasures(contract, result))
+    removeMeasuresByDate(location, initDate.clone()).then(() => addMeasures(location, result))
     // fs.writeFileSync('data/' + initDate.format('DD-MM-YYYY') + '.json', JSON.stringify(result, null, 4))
     initDate.subtract(1, 'd')
   }

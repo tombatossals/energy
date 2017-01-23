@@ -30,7 +30,7 @@ if (process.argv.length > 2 && process.argv[2] === 'full') {
     )
 
     return Promise.all(promises).then(dataArray =>
-      removeMeasuresByDate(contract, date).then(() =>
+      removeMeasuresByDate(contract, dataArray[0].date).then(() =>
         addUserLocation(username, contract).then(() =>
           addMeasures(contract, flatten(dataArray)).then(process.exit)
         )
