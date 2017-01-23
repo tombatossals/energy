@@ -66,6 +66,8 @@ const waitFor = async (data) => {
     height: 800
   })
 
+  page.setting('userAgent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36')
+
   page.property('onConsoleMessage', (msg, lineNum, sourceId) =>
     console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")')
   )
