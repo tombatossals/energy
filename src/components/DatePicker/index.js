@@ -38,7 +38,7 @@ class CustomDatePicker extends React.Component {
     const modifiers = {
       selected: date => isSameInterval(this.props.date, date, this.props.interval),
       hovered: date => isSameInterval(this.state.hoverDate, date, this.props.interval),
-      past: date => date.isAfter(moment().subtract(2, 'day'))
+      past: date => date.isAfter(moment().endOf('day').subtract(2, 'day'))
     }
 
     return {

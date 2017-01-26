@@ -43,7 +43,6 @@ class Dashboard extends React.Component {
   locationSelected (ev) {
     const { interval, date } = this.props.params
     this.context.router.transitionTo(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
-    console.log(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
   }
 
   render () {
