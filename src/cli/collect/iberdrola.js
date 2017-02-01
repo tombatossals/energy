@@ -32,7 +32,7 @@ class Iberdrola {
   async init () {
     this.instance = await phantom.create()
     this.page = await this.instance.createPage()
-    
+
     this.page.setting('userAgent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.71 Safari/537.36')
 
     this.page.property('viewportSize', {
@@ -42,11 +42,41 @@ class Iberdrola {
 
     this.page.addCookie({
       name: 'leyAnticookies',
-      value: '1',
+      value: '0000tQtj5SWlXPjJVsbbkWUZbuJ:18bld1a44',
+      domain: 'www.iberdroladistribucionelectrica.com',
+      path: '/',
+      httponly: false,
+      secure: true,
+      expires: '9999-12-31T23:59:59.000Z'
+    })
+
+    this.page.addCookie({
+      name: 'NSC_wt_mc_mbssvo-10161',
+      value: 'ffffffffaf1b3f8345525d5f4f58455e445a4a421181',
+      domain: 'www.iberdroladistribucionelectrica.com',
+      path: '/',
+      httponly: false,
+      secure: true,
+      expires: '9999-12-31T23:59:59.000Z'
+    })
+
+    this.page.addCookie({
+      name: 'i18next',
+      value: 'es',
+      domain: 'www.iberdroladistribucionelectrica.com',
+      path: '/',
+      httponly: false,
+      secure: true,
+      expires: '9999-12-31T23:59:59.000Z'
+    })
+
+    this.page.addCookie({
+      name: 'JSESSIONID',
+      value: '',
       domain: 'www.iberdroladistribucionelectrica.com',
       path: '/consumidores',
       httponly: false,
-      secure: false,
+      secure: true,
       expires: '9999-12-31T23:59:59.000Z'
     })
 
