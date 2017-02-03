@@ -16,7 +16,7 @@ const previousInterval = {
 }
 
 const sortMeasures = measures =>
-  Object.values(measures).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
+  measures.slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
 
 const initialInterval = (date, interval) => {
   const current = date.clone().startOf(interval)
@@ -37,7 +37,7 @@ const initialInterval = (date, interval) => {
 
 const groupByWeekDay = measures => {
   const result = {}
-  for (let measure of Object.values(measures)) {
+  for (let measure of measures) {
     result.hasOwnProperty(measure.date)
       ? result[measure.date].value += measure.value
       : result[measure.date] = {
@@ -51,7 +51,7 @@ const groupByWeekDay = measures => {
 
 const groupByMonthWeek = measures => {
   const result = {}
-  for (let measure of Object.values(measures)) {
+  for (let measure of measures) {
     result.hasOwnProperty(moment(measure.time).startOf('week').format('MMDD'))
       ? result[moment(measure.time).startOf('week').format('MMDD')].value += measure.value
       : result[moment(measure.time).startOf('week').format('MMDD')] = {
@@ -65,7 +65,7 @@ const groupByMonthWeek = measures => {
 
 const groupByYearMonth = measures => {
   const result = {}
-  for (let measure of Object.values(measures)) {
+  for (let measure of measures) {
     result.hasOwnProperty(moment(measure.time).startOf('month').format('MM'))
       ? result[moment(measure.time).startOf('month').format('MM')].value += measure.value
       : result[moment(measure.time).startOf('month').format('MM')] = {
@@ -78,7 +78,7 @@ const groupByYearMonth = measures => {
 }
 
 const groupByHourDay = measures =>
-  Object.values(measures).slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
+  measures.slice().sort((t1, t2) => moment(t1.time) - moment(t2.time))
 
 const groupMeasures = {
   [Intervals.DAY]: groupByHourDay,
@@ -93,7 +93,7 @@ export const getWatts = (interval, date, ref) =>
       .startAt(date.clone().startOf(interval).format('YYYYMMDD'))
       .endAt(date.clone().endOf(interval).format('YYYYMMDD')).once('value').then(measures =>
         measures.val()
-        ? resolve(groupMeasures[interval](measures.val()))
+        ? resolve(groupMeasures[interval](Object.values(measures.val())))
         : resolve(sortMeasures(initialInterval(date, interval)))
   ))
 
@@ -110,7 +110,7 @@ export const getWattsByInterval = (location, date, interval) =>
       .once('value')
       .then(measures =>
         measures.val()
-        ? resolve(sortMeasures(measures.val()))
+        ? resolve(sortMeasures(Object.values(measures.val())))
         : resolve(sortMeasures(initialInterval(date, interval))))
   )
 

@@ -33,9 +33,12 @@ export const removeMeasuresByDate = (location, date, interval = 'day') =>
   )
 
 export const cleanCache = location =>
-  db.ref(`measures/${location}/year`).set([]).then(() =>
-      db.ref(`measures/${location}/month`).set([])).then(() =>
-        db.ref(`measures/${location}/week`).set([]))
+  Promise.all([
+    db.ref(`measures/${location}/year`).set([]).transaction,
+    db.ref(`measures/${location}/month`).set([]).transaction,
+    db.ref(`measures/${location}/week`).set([]).transaction
+  ])
+
 
 export const addMeasuresByInterval = (location, date, interval) =>
   new Promise((resolve, reject) =>

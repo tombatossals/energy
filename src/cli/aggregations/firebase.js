@@ -9,14 +9,20 @@ import cla from 'command-line-args'
 const config = getServerConfig().collect.iberdrola
 const locations = config[Object.keys(config)[0]].locations
 
-const { clean, location, year } = cla([
+const { clean, year } = cla([
   { name: 'year', type: Number, multiple: false, defaultOption: true, defaultValue: moment().year() },
-  { name: 'clean', type: Boolean, defaultValue: false },
-  { name: 'location', alias: 'l', type: String }
+  { name: 'clean', type: Boolean, defaultValue: false }
 ])
 
+const endTransaction = status => (status || 0) - 1
+
 if (clean) {
-  cleanCache(location).then(() => setTimeout(() => process.exit(), 5000))
+  const promises = []
+  for (let location of locations) {
+    promises.push(cleanCache(location.id))
+  }
+
+  Promise.all(promises).then(process.exit)
 } else {
   const date = moment(year, 'YYYY')
   let current = date.clone().startOf('year')
@@ -25,19 +31,18 @@ if (clean) {
   for (let location of locations) {
     console.log(`Generating cache of location ${location.name} for the year ${date.year()}...`)
     while (current.week() <= date.week()) {
-      promises.push(addMeasuresByInterval(location.id, current.clone(), 'week'))
+      promises.push(addMeasuresByInterval(location.id, current.clone(), 'week').transaction(endTransaction))
       current.add(1, 'week')
     }
 
     current = date.clone().startOf('year')
     while (current.month() <= date.month()) {
-      promises.push(addMeasuresByInterval(location.id, current.clone(), 'month'))
+      promises.push(addMeasuresByInterval(location.id, current.clone(), 'month').transaction(endTransaction))
       current.add(1, 'month')
     }
 
-    promises.push(addMeasuresByInterval(location.id, date.clone().startOf('year'), 'year'))
+    promises.push(addMeasuresByInterval(location.id, date.clone().startOf('year'), 'year').transaction(endTransaction))
   }
 
-  Promise.all(promises)
-    .then(() => setTimeout(() => process.exit(), 5000))
+  Promise.all(promises).then(process.exit)
 }

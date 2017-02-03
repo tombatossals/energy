@@ -40,7 +40,7 @@
     "@tombatossals/react-dates": "^4.3.3",
     "babel-cli": "^6.22.2",
     "chokidar": "^1.6.1",
-    "command-line-args": "^3.0.5",
+    "command-line-args": "^4.0.1",
     "eslint-config-standard-react": "^4.2.0",
     "firebase": "^3.6.7",
     "firebase-admin": "^4.0.6",

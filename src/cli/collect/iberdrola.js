@@ -16,7 +16,7 @@ class Iberdrola {
     this.password = password
   }
 
-  sleep (ms = 1000) {
+  async sleep (ms = 1000) {
     return new Promise((resolve, reject) => setTimeout(resolve, ms))
   }
 
@@ -55,26 +55,6 @@ class Iberdrola {
       value: 'ffffffffaf1b3f8345525d5f4f58455e445a4a421181',
       domain: 'www.iberdroladistribucionelectrica.com',
       path: '/',
-      httponly: false,
-      secure: true,
-      expires: '9999-12-31T23:59:59.000Z'
-    })
-
-    this.page.addCookie({
-      name: 'i18next',
-      value: 'es',
-      domain: 'www.iberdroladistribucionelectrica.com',
-      path: '/',
-      httponly: false,
-      secure: true,
-      expires: '9999-12-31T23:59:59.000Z'
-    })
-
-    this.page.addCookie({
-      name: 'JSESSIONID',
-      value: '',
-      domain: 'www.iberdroladistribucionelectrica.com',
-      path: '/consumidores',
       httponly: false,
       secure: true,
       expires: '9999-12-31T23:59:59.000Z'
@@ -173,6 +153,8 @@ class Iberdrola {
 }
 
 (async function () {
+  const promises = []
+
   const { location: locationName, dates: cmdDates, username: usernameCmd } = cla([
     { name: 'dates', type: String, multiple: true, defaultOption: true },
     { name: 'username', type: String, alias: 'u' },
@@ -201,7 +183,7 @@ class Iberdrola {
     const endDate = cmdDates && cmdDates.length > 1
           ? moment(cmdDates[1], 'DD-MM-YYYY').subtract(1, 'day')
           : moment().subtract(3, 'd')
-    
+
     while (initDate.isAfter(endDate)) {
       console.log(`Downloading ${initDate.format('DD-MM-YYYY')} into "data" folder...`)
       const b64string = await iberdrola.getData(initDate)
@@ -218,10 +200,11 @@ class Iberdrola {
         }
       })
 
-      removeMeasuresByDate(location.id, initDate.clone()).then(() => addMeasures(location.id, result))
+      promises.push(removeMeasuresByDate(location.id, initDate.clone()).then(() => addMeasures(location.id, result)).transaction)
       initDate.subtract(1, 'd')
     }
   }
-  setTimeout(() => process.exit(), 5000)
+
+  Promise.all(promises).then(process.exit)
 })()
 
