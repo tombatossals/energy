@@ -175,6 +175,7 @@ class Iberdrola {
   await iberdrola.login()
 
   for (let location of locations) {
+    console.log(location)
     console.log(`Getting into Iberdrola page location ${location.id}, wait a few seconds...`)
     await iberdrola.loadLocation(location.id)
     const initDate = cmdDates && cmdDates.length > 0

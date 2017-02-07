@@ -20,13 +20,14 @@ if (clean) {
     promises.push(cleanCache(location.id))
   }
 
-  Promise.all(promises).then(process.exit)
+  Promise.all(promises).then(console.log).then(process.exit)
 } else {
-  const date = moment(year, 'YYYY')
-  let current = date.clone().startOf('year')
   const promises = []
 
   for (let location of locations) {
+    const date = moment(year, 'YYYY')
+    let current = date.clone().startOf('year')
+
     console.log(`Generating cache of location ${location.name} for the year ${date.year()}...`)
     while (current.week() <= date.week()) {
       promises.push(addMeasuresByInterval(location.id, current.clone(), 'week'))

@@ -33,18 +33,20 @@ export const removeMeasuresByDate = (location, date, interval = 'day') =>
   )
 
 export const cleanCache = location =>
-  Promise.all([
-    db.ref(`measures/${location}/year`).set([]).transaction,
-    db.ref(`measures/${location}/month`).set([]).transaction,
-    db.ref(`measures/${location}/week`).set([]).transaction
-  ])
+  new Promise((resolve, reject) =>
+    Promise.all([
+      db.ref(`measures/${location}`).child('year').remove(resolve),
+      db.ref(`measures/${location}`).child('month').remove().transaction,
+      db.ref(`measures/${location}`).child('week').remove().transaction
+    ])
+  )
 
 
 export const addMeasuresByInterval = (location, date, interval) =>
   Promise.all([
     removeMeasuresByDate(location, date, interval),
     getWatts(interval, date, db.ref(`measures/${location}/day`))
-  ]).then(measures =>
+  ]).then(([_, measures]) =>
       Promise.all(measures.map(measure =>
         measure.value > 0 && db.ref(`measures/${location}/${interval}`).push(measure).transaction))
-    ).then(res => console.log(res))
+  )
