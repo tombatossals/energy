@@ -14,8 +14,6 @@ const { clean, year } = cla([
   { name: 'clean', type: Boolean, defaultValue: false }
 ])
 
-const endTransaction = status => (status || 0) - 1
-
 if (clean) {
   const promises = []
   for (let location of locations) {
@@ -31,17 +29,17 @@ if (clean) {
   for (let location of locations) {
     console.log(`Generating cache of location ${location.name} for the year ${date.year()}...`)
     while (current.week() <= date.week()) {
-      promises.push(addMeasuresByInterval(location.id, current.clone(), 'week').transaction(endTransaction))
+      promises.push(addMeasuresByInterval(location.id, current.clone(), 'week'))
       current.add(1, 'week')
     }
 
     current = date.clone().startOf('year')
     while (current.month() <= date.month()) {
-      promises.push(addMeasuresByInterval(location.id, current.clone(), 'month').transaction(endTransaction))
+      promises.push(addMeasuresByInterval(location.id, current.clone(), 'month'))
       current.add(1, 'month')
     }
 
-    promises.push(addMeasuresByInterval(location.id, date.clone().startOf('year'), 'year').transaction(endTransaction))
+    promises.push(addMeasuresByInterval(location.id, date.clone().startOf('year'), 'year'))
   }
 
   Promise.all(promises).then(process.exit)
