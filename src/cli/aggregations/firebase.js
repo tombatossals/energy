@@ -20,7 +20,7 @@ if (clean) {
     promises.push(cleanCache(location.id))
   }
 
-  Promise.all(promises).then(console.log).then(process.exit)
+  Promise.all(promises).then(process.exit)
 } else {
   const promises = []
 
