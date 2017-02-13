@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Match, BrowserRouter, Miss, Redirect } from 'react-router'
+import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import { startAuthListener } from '../actions'
@@ -10,28 +10,18 @@ import Dashboard from '../containers/Dashboard'
 import Logout from '../containers/Logout'
 import Home from '../components/Home'
 
-const MatchWhenAuthorized = ({ component: Component, auth, ...rest }) =>
-  <Match
+const AuthorizedRoute = ({ component: Component, auth, ...rest }) =>
+  <Route
     {...rest}
-    render={(props) => auth.authenticated === true
+    render={props => auth.authenticated
       ? <Layout><Component {...props} /></Layout>
       : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />}
   />
 
-MatchWhenAuthorized.propTypes = {
+AuthorizedRoute.propTypes = {
   component: React.PropTypes.any.isRequired,
   auth: authPropType.isRequired,
   location: React.PropTypes.object
-}
-
-const MatchWithLayout = ({ component: Component, ...rest }) =>
-  <Match
-    {...rest}
-    render={(props) => <Layout><Component {...props} /></Layout>}
-  />
-
-MatchWithLayout.propTypes = {
-  component: React.PropTypes.any.isRequired
 }
 
 class Routes extends Component {
@@ -41,21 +31,21 @@ class Routes extends Component {
 
   render () {
     return (
-      <BrowserRouter>
-        {({ router }) => (
-          <div className='router'>
-            <MatchWithLayout pattern='/' exactly component={Home} />
-            <MatchWithLayout pattern='/logout' exactly component={Logout} />
-            <MatchWithLayout from={router} auth={this.props.auth} pattern='/login' component={Login} {...this.props} />
-            <Match pattern='/dashboard' exactly component={() =>
+      <Router>
+        <Layout>
+          <Switch>
+            <Route path='/' exactly component={Home} />
+            <Route path='/logout' exactly component={Logout} {...this.props} />
+            <Route path='/login' component={Login} {...this.props} />
+            <Route path='/dashboard' exactly component={() =>
               <Redirect to={`/dashboard/interval/day/date/${moment().subtract(2, 'day').format('YYYYMMDD')}`} />}
             />
-            <MatchWhenAuthorized auth={this.props.auth} router={router} pattern='/dashboard/interval/:interval/date/:date' component={Dashboard} />
-            <MatchWhenAuthorized auth={this.props.auth} router={router} pattern='/dashboard/:location/interval/:interval/date/:date' component={Dashboard} />
-            <Miss render={() => <h1>No Match</h1>} />
-          </div>
-        )}
-      </BrowserRouter>
+            <AuthorizedRoute auth={this.props.auth} path='/dashboard/interval/:interval/date/:date' component={Dashboard} />
+            <AuthorizedRoute auth={this.props.auth} path='/dashboard/:location/interval/:interval/date/:date' component={Dashboard} />
+            <Route component={() => <h1>No Match</h1>} />
+          </Switch>
+        </Layout>
+      </Router>
     )
   }
 }
