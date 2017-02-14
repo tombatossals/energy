@@ -1,6 +1,6 @@
 import React from 'react'
 import moment from 'moment'
-import { Link, Redirect } from 'react-router-dom'
+import { Link, Redirect, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { getWattsByInterval, getLocations } from '../../actions'
 import Chart from '../../components/Chart'
@@ -19,6 +19,7 @@ class Dashboard extends React.Component {
   componentDidMount () {
     this.props.getLocations()
 
+    console.log(this.props.router)
     if (this.props.params.location) {
       this.props.getWattsByInterval(this.props.params.location, moment(this.props.params.date), this.props.params.interval)
     }
@@ -42,7 +43,7 @@ class Dashboard extends React.Component {
 
   locationSelected (ev) {
     const { interval, date } = this.props.params
-    this.context.router.transitionTo(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
+    this.props.router.transitionTo(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
   }
 
   render () {
@@ -103,7 +104,6 @@ Dashboard.propTypes = {
   getLocations: React.PropTypes.func.isRequired,
   watt: React.PropTypes.object,
   locations: React.PropTypes.object,
-  pathname: React.PropTypes.string.isRequired,
   params: React.PropTypes.shape({
     interval: React.PropTypes.string.isRequired,
     date: React.PropTypes.string.isRequired,
@@ -120,4 +120,4 @@ const mapStateToProps = ({ watt, locations }) => ({
   locations
 })
 
-export default connect(mapStateToProps, { getWattsByInterval, getLocations })(Dashboard)
+export default connect(mapStateToProps, { getWattsByInterval, getLocations })(withRouter(Dashboard))

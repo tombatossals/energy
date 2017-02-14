@@ -34,10 +34,10 @@ class Routes extends Component {
       <Router>
         <Layout>
           <Switch>
-            <Route path='/' exactly component={Home} />
-            <Route path='/logout' exactly component={Logout} {...this.props} />
+            <Route path='/' exact component={Home} />
+            <Route path='/logout' component={Logout} {...this.props} />
             <Route path='/login' component={Login} {...this.props} />
-            <Route path='/dashboard' exactly component={() =>
+            <Route path='/dashboard' exact component={() =>
               <Redirect to={`/dashboard/interval/day/date/${moment().subtract(2, 'day').format('YYYYMMDD')}`} />}
             />
             <AuthorizedRoute auth={this.props.auth} path='/dashboard/interval/:interval/date/:date' component={Dashboard} />

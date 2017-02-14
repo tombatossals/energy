@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@tombatossals/react-dates": "^4.3.3",
-    "babel-cli": "^6.22.2",
+    "babel-cli": "^6.23.0",
     "chokidar": "^1.6.1",
     "command-line-args": "^4.0.1",
     "eslint-config-standard-react": "^4.2.0",
@@ -55,7 +55,7 @@
     "react-dom": "^15.4.2",
     "react-helmet": "^4.0.0",
     "react-redux": "^5.0.1",
-    "react-router-dom": "^4.0.0-beta.5",
+    "react-router-dom": "^4.0.0-beta.6",
     "recharts": "^0.20.6",
     "redux": "^3.6.0",
     "redux-actions": "^1.2.1",
