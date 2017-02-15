@@ -14,7 +14,7 @@ const AuthorizedRoute = ({ component: Component, auth, ...rest }) =>
   <Route
     {...rest}
     render={props => auth.authenticated
-      ? <Layout><Component {...props} /></Layout>
+      ? <Component {...props} />
       : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />}
   />
 

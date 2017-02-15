@@ -32,7 +32,7 @@ const initialInterval = (date, interval) => {
     }
   }
 
-  return measures
+  return Object.values(measures)
 }
 
 const groupByWeekDay = measures => {

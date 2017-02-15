@@ -19,22 +19,24 @@ class Dashboard extends React.Component {
   componentDidMount () {
     this.props.getLocations()
 
-    console.log(this.props.router)
-    if (this.props.params.location) {
-      this.props.getWattsByInterval(this.props.params.location, moment(this.props.params.date), this.props.params.interval)
+    if (this.props.match.params.location) {
+      const { interval, date } = this.props.match.params
+      this.props.getWattsByInterval(this.props.match.params.location, moment(date), interval)
     }
   }
 
   componentDidUpdate (prevProps, prevState) {
-    if (this.props.params.date !== prevProps.params.date ||
-        this.props.params.interval !== prevProps.params.interval ||
-        this.props.params.location !== prevProps.params.location) {
-      this.props.getWattsByInterval(this.props.params.location, moment(this.props.params.date), this.props.params.interval)
+    const { interval, date, location } = this.props.match.params
+    if (date !== prevProps.match.params.date ||
+        interval !== prevProps.match.params.interval ||
+        location !== prevProps.match.params.location) {
+      this.props.getWattsByInterval(location, moment(date), interval)
     }
   }
 
   dateSelected (date) {
-    this.context.router.transitionTo(`/dashboard/${this.props.params.location}/interval/${this.props.params.interval}/date/${date.format('YYYYMMDD')}`)
+    const { interval, location } = this.props.match.params
+    this.props.push(`/dashboard/${location}/interval/${interval}/date/${date.format('YYYYMMDD')}`)
   }
 
   upperFirst (str) {
@@ -42,13 +44,13 @@ class Dashboard extends React.Component {
   }
 
   locationSelected (ev) {
-    const { interval, date } = this.props.params
-    this.props.router.transitionTo(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
+    const { interval, date } = this.props.match.params
+    this.props.push(`/dashboard/${ev.target.value}/interval/${interval}/date/${date}`)
   }
 
   render () {
-    if (!this.props.params.location && this.props.locations.data.length === 1) {
-      const { interval, date } = this.props.params
+    if (!this.props.match.params.location && this.props.locations.data.length === 1) {
+      const { interval, date } = this.props.match.params
       return <Redirect to={`/dashboard/${this.props.locations.data[0]}/interval/${interval}/date/${date}`} />
     }
 
@@ -56,7 +58,7 @@ class Dashboard extends React.Component {
       <div className='Dashboard'>
         <div className='Bar'>
           <div className='select'>
-            <select onChange={this.locationSelected} value={this.props.params.location}>
+            <select onChange={this.locationSelected} value={this.props.match.params.location}>
               <option>Select Location:</option>
               {this.props.locations.data.map(location =>
                 <option key={location.id} value={location.id}>{ location.name }</option>
@@ -64,21 +66,21 @@ class Dashboard extends React.Component {
             </select>
             <div className='select__arrow' />
           </div>
-          { this.props.params.location &&
+          { this.props.match.params.location &&
             <div>
               <div className='DatePicker'>
                 <DatePicker
-                  interval={this.props.params.interval}
-                  initialVisibleMonth={() => moment(this.props.params.date)}
-                  date={moment(this.props.params.date)}
+                  interval={this.props.match.params.interval}
+                  initialVisibleMonth={() => moment(this.props.match.params.date)}
+                  date={moment(this.props.match.params.date)}
                   onDateSelected={this.dateSelected}
                 />
               </div>
               <div className='Menu'>
                 <div className='MenuItem'>
                   {Object.values(Intervals).map(interval =>
-                    <Link className='NoUnderline' key={interval} to={`/dashboard/${this.props.params.location}/interval/${interval}/date/${this.props.params.date}`}>
-                      <Button active={this.props.params.interval === interval}>
+                    <Link className='NoUnderline' key={interval} to={`/dashboard/${this.props.match.params.location}/interval/${interval}/date/${this.props.match.params.date}`}>
+                      <Button active={this.props.match.params.interval === interval}>
                         {this.upperFirst(interval)}
                       </Button>
                     </Link>
@@ -89,9 +91,9 @@ class Dashboard extends React.Component {
             </div>
           }
         </div>
-        { this.props.params.location &&
+        { this.props.match.params.location &&
           <div className='ChartContainer'>
-            <Chart watt={this.props.watt} interval={this.props.params.interval} />
+            <Chart watt={this.props.watt} interval={this.props.match.params.interval} />
           </div>
         }
       </div>
@@ -104,11 +106,15 @@ Dashboard.propTypes = {
   getLocations: React.PropTypes.func.isRequired,
   watt: React.PropTypes.object,
   locations: React.PropTypes.object,
-  params: React.PropTypes.shape({
-    interval: React.PropTypes.string.isRequired,
-    date: React.PropTypes.string.isRequired,
-    location: React.PropTypes.string
-  })
+  match: React.PropTypes.shape({
+    params: React.PropTypes.shape({
+      date: React.PropTypes.string.isRequired,
+      interval: React.PropTypes.string.isRequired,
+      location: React.PropTypes.string
+    })
+  }),
+  push: React.PropTypes.func.isRequired,
+  location: React.PropTypes.object
 }
 
 Dashboard.contextTypes = {
@@ -120,4 +126,4 @@ const mapStateToProps = ({ watt, locations }) => ({
   locations
 })
 
-export default connect(mapStateToProps, { getWattsByInterval, getLocations })(withRouter(Dashboard))
+export default withRouter(connect(mapStateToProps, { getWattsByInterval, getLocations })(Dashboard))
