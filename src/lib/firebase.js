@@ -41,7 +41,7 @@ const groupByWeekDay = measures => {
     result.hasOwnProperty(measure.date)
       ? result[measure.date].value += measure.value
       : result[measure.date] = {
-        date: moment(measure.time).format('YYYYMMDD'),
+        date: moment(measure.time).startOf('day').format('YYYYMMDD'),
         time: moment(measure.time).endOf('day').toISOString(),
         value: measure.value
       }

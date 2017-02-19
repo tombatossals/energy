@@ -25,7 +25,7 @@ if (clean) {
   const promises = []
 
   for (let location of locations) {
-    const date = moment(year, 'YYYY')
+    const date = moment()
     let current = date.clone().startOf('year')
 
     console.log(`Generating cache of location ${location.name} for the year ${date.year()}...`)
