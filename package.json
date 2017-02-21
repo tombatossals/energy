@@ -37,7 +37,7 @@
     "standard": "^8.3.0"
   },
   "dependencies": {
-    "@tombatossals/react-dates": "^4.3.3",
+    "@tombatossals/react-dates": "^7.0.1",
     "babel-cli": "^6.23.0",
     "chokidar": "^1.6.1",
     "command-line-args": "^4.0.1",
