@@ -46,6 +46,7 @@ class CustomDatePicker extends React.Component {
         id={this.props.interval}
         onDayClick={this.onDateClick}
         modifiers={modifiers}
+        numberOfMonths={1}
         onDayMouseEnter={this.onMouseEnter}
         onDayMouseLeave={this.onMouseLeave}
         {...this.props}
@@ -54,6 +55,7 @@ class CustomDatePicker extends React.Component {
         id={this.props.interval}
         onDayClick={this.onDateClick}
         enableOutsideDays
+        numberOfMonths={1}
         modifiers={modifiers}
         onDayMouseEnter={this.onMouseEnter}
         onDayMouseLeave={this.onMouseLeave}
