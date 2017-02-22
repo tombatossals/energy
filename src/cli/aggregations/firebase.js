@@ -25,17 +25,17 @@ if (clean) {
   const promises = []
 
   for (let location of locations) {
-    const date = moment()
+    const date = year < moment().year() ? moment(year, 'YYYY').endOf('year') : moment()
     let current = date.clone().startOf('year')
 
     console.log(`Generating cache of location ${location.name} for the year ${date.year()}...`)
-    while (current.week() <= date.week()) {
+    while (current.week() <= date.week() && current.year() === date.year()) {
       promises.push(addMeasuresByInterval(location.id, current.clone(), 'week'))
       current.add(1, 'week')
     }
 
     current = date.clone().startOf('year')
-    while (current.month() <= date.month()) {
+    while (current.month() <= date.month() && current.year() === date.year()) {
       promises.push(addMeasuresByInterval(location.id, current.clone(), 'month'))
       current.add(1, 'month')
     }
